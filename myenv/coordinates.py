@@ -45,8 +45,8 @@ class PointPlotter:
     # maybe try to make an unclick, where it will take away a point
 
     def onclick(self, event):
-        x = event.xdata
-        z = event.ydata
+        x = round(event.xdata, 8)
+        z = round(event.ydata, 8)
         y = 0
         # Add point to graph
         if x is not None and z is not None:
@@ -118,7 +118,7 @@ class PointPlotter:
         self.axes.set_ylim(0, 10)
 
     # Helper function
-    def create_bezier_curve(self):
+    def create_bezier_curve(self) -> list:
         input_array = np.array(self.points)
         if len(input_array) < 2:
             print("Need at least two points to draw a Bezier curve.")
@@ -131,6 +131,7 @@ class PointPlotter:
 
         # Create points along bezier segment
         curve_points = bezier_segment(t_values)
+        curve_points = np.round(curve_points, 8)
         return curve_points
 
 
