@@ -54,14 +54,14 @@ def forward_k(thetas: list):
     T2 = matrixlog(xi2, th2)
     T3 = matrixlog(xi3, th3)
 
-    j1 = p1
-    j2 = np.dot(np.dot(T1, T2), (np.array(p2).transpose()))
-    j3 = np.dot(np.dot(np.dot(T1, T2), T3), np.array(p3).transpose())
+    # j1 = p1
+    # j2 = np.dot(np.dot(T1, T2), (np.array(p2).transpose()))
+    # j3 = np.dot(np.dot(np.dot(T1, T2), T3), np.array(p3).transpose())
     j4 = np.dot(np.dot(np.dot(T1, T2), T3), np.array(p4).transpose())
 
     pfoot = np.array(j4)[0][:3]
-    j = [np.array(j1)[:3], np.array(j2)[0][:3], np.array(j3)[0][:3], pfoot]
-    print(j)
+    # j = [np.array(j1)[:3], np.array(j2)[0][:3], np.array(j3)[0][:3], pfoot]
+    # print(j)
     # return j
     return pfoot
 

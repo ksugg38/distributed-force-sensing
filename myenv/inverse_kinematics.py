@@ -1,7 +1,8 @@
 import pandas as pd
-import scipy.optimize
 from forward_kinematics import forward_k
-import scipy
+from scipy.optimize import fsolve
+# from scipy.optimize import bisect
+import numpy as np
 
 # Make Pandas dataframe
 # Change CSV name to correct file/file path
@@ -34,10 +35,23 @@ num_steps = len(array_of_coordinates)
 dt = step_time/num_steps
 
 # Newton-Raphson Root Finding Method
-th = [1, 2, 1]
-th_guess = [0, 0, 0]
+# th = [1, 2, 1]
+
+# Initialize arrays to store results
+th = np.zeros((3, num_steps))
+foot = np.zeros((3, num_steps))
+th_guess = np.array([0, 0, 0])
 j = 0
-for j in num_steps:
-    function = array_of_coordinates[:j] - forward_k(th)
-    th[:j] = scipy.optimize.fsolve(function, th_guess)
-    
+array_of_coordinates = np.array(array_of_coordinates)
+def funct(th, coords): return coords - forward_k(th)
+
+
+for j in range(num_steps):
+    th[:, j] = fsolve(lambda th: funct(
+        th, array_of_coordinates[j]), th_guess)
+    foot[:, j] = forward_k(th[:, j])
+    th_guess = th[:, j]
+
+
+print("something")
+print(th)
