@@ -1,61 +1,41 @@
-# from forward_kinematics_lists import forward_k
-from forward_kinematics import forward_k
+from forward_kinematics_lists import forward_k
+# from forward_kinematics import forward_k
 from scipy.optimize import fsolve
 import numpy as np
 import matplotlib.pyplot as plt
 
-# joint_positions: list, joint_axes: list,
 
-
-def inverse_k(
-        array_of_coordinates: list):
-
-    num_steps = len(array_of_coordinates)
-
-    # Newton-Raphson Root Finding Method
-    # Initialize arrays to store results
-    th = np.zeros((3, num_steps))
-    # th = np.zeros((3, 1))
-    foot = np.zeros((3, num_steps))
-    th_guess = np.array([0, 0, 0])
+def inverse_k(joint_positions: list, joint_axes: list,
+              array_of_coordinates: list):
+    # Make sure array_of_coordinates is np array
     array_of_coordinates = np.array(array_of_coordinates)
 
-    # fun = lambda th(th, coords): coords - forward_k(th)
-    # forward_k(th, joint_positions, joint_axes)
-    # funct = lambda th, coords: coords - forward_k(th)
-    # lambda th, coords: coords - forward_k(th)
+    # Get number of coordinates
+    num_coords = len(array_of_coordinates)
 
-    # print(array_of_coordinates[1:3, :])
+    # Initialize arrays to store results
+    thetas = np.zeros((3, num_coords))
+    recreated_path = np.zeros((3, num_coords))
+    theta_guess = np.array([0, 0, 0])
 
     def funct(th, coords):
-        # print("coords")
-        # print(coords)
-        # print("th")
-        # print(th)
-        # print("after theta")
-        return coords - forward_k(th)
+        return coords - forward_k(th, joint_positions, joint_axes)
 
-    for j in range(num_steps):
+    # Newton-Raphson Root Finding Method
+    for j in range(num_coords):
+        # Calculated inverse kinematics
+        thetas[:, j] = fsolve(funct, theta_guess,
+                              args=array_of_coordinates[j, :])
 
-        # k = j + 1
-        array = array_of_coordinates[j, :]
-        # print("array")
-        # print(array)
-        # print("after array")
+        # Calculate forward_k to check footpath off of calculated theta
+        recreated_path[:, j] = forward_k(thetas[:, j],
+                                         joint_positions, joint_axes)
 
-        th[:, j] = fsolve(funct, th_guess, args=array)
-        # print("th")
-        # print(th[:, j])
-        # print("array")
-        # print(array)
-        # th[:, j] = fsolve(array - theta, th_guess)
-        # th[:, j] = fsolve(funct, th_guess, args=(array_of_coordinates[:, j],))
-        # foot[:, j] = forward_k(th[:, j], joint_positions, joint_axes)
-        foot[:, j] = forward_k(th[:, j])
-        # th_guess = th[:, j]
+        # Update theta guess
+        theta_guess = thetas[:, j]
 
     # Read the CSV file into a DataFrame
-    data = foot
+    data = recreated_path
     print(data)
 
     # Extract x, y, and z coordinates
@@ -79,4 +59,4 @@ def inverse_k(
     # # Show the plot
     plt.show()
 
-    return th
+    return thetas

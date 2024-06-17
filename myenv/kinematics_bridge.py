@@ -48,7 +48,7 @@ joint_axes = [w1, w2, w3]
 
 # Calculate joint angles , joint_axes, array_of_coordinates
 # joint_positions
-joint_angles = inverse_k(array_of_coordinates)
+joint_angles = inverse_k(joint_positions, joint_axes, array_of_coordinates)
 
 # Convert to pandas dataframe
 df = pd.DataFrame(joint_angles)

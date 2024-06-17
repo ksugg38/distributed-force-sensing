@@ -13,7 +13,8 @@ def forward_k(thetas: list, joint_positions: list, joint_axes: list):
 
     neg_joint_axes = []
     for j in range(len(joint_axes)):
-        neg = [k * -1 for k in joint_axes[j]]
+        neg = copy.deepcopy(joint_axes[j])
+        neg = [k * -1 for k in neg]
         neg_joint_axes.append(neg)
 
     # Calculate cross product between negative joint axis and joint position
@@ -34,7 +35,6 @@ def forward_k(thetas: list, joint_positions: list, joint_axes: list):
     HTM = []
     for i in range(len(twists)):
         htm = matrixlog(twists[i], thetas[i])
-        print("in HTM")
         HTM.append(htm)
 
     end_effector = np.array(
@@ -51,23 +51,21 @@ def forward_k(thetas: list, joint_positions: list, joint_axes: list):
 
 
 def matrixlog(xi: list, th: float):
-    print(xi)
-    v = xi[:2]
-    print(v)
+    v = xi[:3]
     w = xi[3:]
-    print(w)
-    R = np.matrix([[((math.cos(th)**2)*(1-math.cos(th))),
+    # assume theta is in radians
+    R = np.matrix([[(np.cos(th)+w[0]**2*(1-math.cos(th))),
                     (w[0]*w[1]*(1-math.cos(th))-w[2]*math.sin(th)),
                     (w[0]*w[2]*(1-math.cos(th))+w[1]*math.sin(th))],
                   [(w[0]*w[1]*(1-math.cos(th))+w[2]*math.sin(th)),
-                   ((math.cos(th)+w[1]**2)*(1-math.cos(th))),
+                   (math.cos(th)+w[1]**2*(1-math.cos(th))),
                    (w[1]*w[2]*(1-math.cos(th))-w[0]*math.sin(th))],
                   [(w[0]*w[2]*(1-math.cos(th))-w[1]*math.sin(th)),
                    (w[1]*w[2]*(1-math.cos(th))+w[0]*math.sin(th)),
-                   ((math.cos(th)+w[2]**2)*(1-math.cos(th)))]]
+                   (math.cos(th)+w[2]**2*(1-np.cos(th)))]]
                   )
 
     x = (np.matmul((np.identity(3)-R), (np.cross(w, v)))
-         + np.matmul(w, w.transpose()) * th).transpose()
+         + np.matmul(np.outer(w, w), v.transpose()) * th).transpose()
     T = np.vstack((np.hstack((R, x)), [0, 0, 0, 1]))
     return T
