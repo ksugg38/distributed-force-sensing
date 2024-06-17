@@ -31,8 +31,8 @@ text_list = list()
 
 for element in all_descendants:
     element_list.append(str(element))
-    parent_list.append(str(parent_map.get(element)))
-                       
+    parent_list.append(str(parent_map.get(element))
+                       if element != root else "None")
     tag_list.append(element.tag)
     text_list.append(element.text)
 
@@ -44,4 +44,3 @@ data = {'Element': element_list,
 
 df = pd.DataFrame(data)
 print(df)
-
