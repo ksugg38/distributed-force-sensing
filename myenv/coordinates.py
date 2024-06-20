@@ -8,12 +8,12 @@ import numpy as np
 class PointPlotter:
     def __init__(self, master):
         self.master = master
-        master.title("Interactive Point Plotter")
+        master.title("Footpath Generator")
 
         self.figure, self.axes = plt.subplots(figsize=(4, 4))
         self.style()
-        self.axes.set_xlim(0, 10)
-        self.axes.set_ylim(0, 10)
+        self.axes.set_xlim(0, 100)
+        self.axes.set_ylim(0, 100)
         self.points = []
 
         self.canvas = FigureCanvasTkAgg(self.figure, master=master)
@@ -51,9 +51,56 @@ class PointPlotter:
         # Add point to graph
         if x is not None and z is not None:
             # You cand append as x, y, z. Then give an option to change the y
-            self.points.append((x, y, z))
-            self.axes.plot(x, z, 'ro')
-            self.canvas.draw()
+            # self.points.append((x, y, z))
+            # self.axes.plot(x, z, 'ro')
+            # self.canvas.draw()
+
+            # self.entry = tk.Entry(self)
+            # self.entry.pack()
+            # self.entry.delete(0, tk.END)
+            # self.entry.insert(tk.END, "Please enter your number")
+            self.show_entry_popup(x, y, z)
+
+    def show_entry_popup(self, x, y, z):
+        popup = tk.Toplevel(self.master)
+        popup.title("Enter Point")
+
+        # Labels and entries for x, y, z
+        label_x = tk.Label(popup, text="X:")
+        label_x.pack()
+        entry_x = tk.Entry(popup)
+        entry_x.pack()
+        entry_x.insert(tk.END, str(x))
+
+        label_y = tk.Label(popup, text="Y:")
+        label_y.pack()
+        entry_y = tk.Entry(popup)
+        entry_y.pack()
+        entry_y.insert(tk.END, str(y))
+
+        label_z = tk.Label(popup, text="Z:")
+        label_z.pack()
+        entry_z = tk.Entry(popup)
+        entry_z.pack()
+        entry_z.insert(tk.END, str(z))
+
+        def confirm():
+            try:
+                x = float(entry_x.get())
+                y = float(entry_y.get())
+                z = float(entry_z.get())
+                self.points.append((x, y, z))
+                self.axes.plot(x, z, 'ro')
+                self.canvas.draw()
+                popup.destroy()
+            except ValueError:
+                error_label.config(text="Confirm numbers for x, y, and z.")
+
+        confirm_button = tk.Button(popup, text="Confirm", command=confirm)
+        confirm_button.pack()
+
+        error_label = tk.Label(popup, text="", fg="red")
+        error_label.pack()
 
     def clear_points(self):
         self.points = []
@@ -107,6 +154,7 @@ class PointPlotter:
         # Save ouput to csv file
         np.savetxt("coordinates2.csv", curve_points,
                    delimiter=",")
+        print("saved coordinates.")
 
     # Helper style function
     def style(self):
