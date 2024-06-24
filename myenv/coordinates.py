@@ -14,7 +14,7 @@ class PointPlotter:
         self.figure, self.axes = plt.subplots(figsize=(5, 5))
         self.style_2d()
         self.axes.set_xlim(0, 100)
-        self.axes.set_ylim(0, 100)
+        self.axes.set_ylim(0, 20)
         self.points = []
 
         self.canvas = FigureCanvasTkAgg(self.figure, master=master)
@@ -138,7 +138,7 @@ class PointPlotter:
         self.axes.set_xlabel('X')
         self.axes.set_ylabel('Z')
         self.axes.set_xlim(0, 100)
-        self.axes.set_ylim(0, 100)
+        self.axes.set_ylim(0, 20)
 
     def style_3d(self):
         self.axes.grid(True)
@@ -147,7 +147,7 @@ class PointPlotter:
         self.axes.set_zlabel('Z')
         self.axes.set_xlim(0, 100)
         self.axes.set_ylim(0, 20)
-        self.axes.set_zlim(0, 100)
+        self.axes.set_zlim(0, 20)
 
     # Creates bezier curve
     def create_bezier_curve(self) -> list:
