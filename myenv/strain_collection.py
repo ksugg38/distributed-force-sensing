@@ -55,7 +55,6 @@ def main():
     data_points = 1000
     i = 0
     while i < data_points:
-
         # Store strain output as an array
         output = read_strain("/dev/cu.usbmodem14201", 9600)
 
