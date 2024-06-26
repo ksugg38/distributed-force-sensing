@@ -10,6 +10,27 @@ def str_to_pos(string):
     return [float(x) for x in string]
 
 
+# TODO
+# need to send back the correct length/size depending on the orientation
+# idk how to determine that yet
+def get_size(geom):
+    # size becomes array
+    size = str_to_pos(geom.get('size'))
+    if geom.get('type') == "plane":
+        print("cmmon")
+    elif geom.get('type') == "box":
+        print("ughhh")
+    elif geom.get('type') == "cylinder":
+        print("tube")
+    elif geom.get('type') == "sphere":
+        print("ball")
+    elif geom.get('type') == "capsule":
+        print("cap")
+    elif geom.get('type') == "ellipsoid":
+        print('disk')
+    return size
+
+
 # Specifiy file path
 file_path = 'twoDOFleg.xml'
 tree = ET.parse(file_path)
@@ -46,7 +67,9 @@ for element in all_descendants:
         body_elements.append(str(element))
         body_name.append(element.get('name'))
         body_pos.append(str_to_pos(element.get('pos')))
-        body_geom.append(str(element.find('geom')))
+        # body_geom.append(str(element.find('geom')))
+        # TODO
+        body_geom.append(str_to_pos(element.find('geom').get('size')))
 
     elif element.tag == "joint":
         # Add items to correct joint list
@@ -75,3 +98,9 @@ joint_data = {'Element': joint_elements,
 joint_df = pd.DataFrame(joint_data)
 
 # make seprate csvs to load into kinematics bridge?
+
+# just realized that geometry has the size for the theta I need
+# TODO
+# read up on what different number of sizes means
+
+print(body_df)
