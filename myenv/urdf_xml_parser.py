@@ -98,4 +98,4 @@ joint_data = {'Element': joint_elements,
               'axis': joint_axis}
 
 joint_df = pd.DataFrame(joint_data)
-# print(joint_df)
+print(joint_df)

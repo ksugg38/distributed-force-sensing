@@ -1,7 +1,6 @@
 import pandas as pd
 from inverse_kinematics import inverse_k
 import math
-# import numpy as np
 
 
 # Change CSV name to correct file/file path

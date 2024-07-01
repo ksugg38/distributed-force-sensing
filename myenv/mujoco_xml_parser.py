@@ -16,18 +16,18 @@ def str_to_pos(string):
 def get_size(geom):
     # size becomes array
     size = str_to_pos(geom.get('size'))
-    if geom.get('type') == "plane":
-        print("cmmon")
-    elif geom.get('type') == "box":
-        print("ughhh")
-    elif geom.get('type') == "cylinder":
-        print("tube")
-    elif geom.get('type') == "sphere":
-        print("ball")
-    elif geom.get('type') == "capsule":
-        print("cap")
-    elif geom.get('type') == "ellipsoid":
-        print('disk')
+    # if geom.get('type') == "plane":
+    #     print("cmmon")
+    # elif geom.get('type') == "box":
+    #     print("ughhh")
+    # elif geom.get('type') == "cylinder":
+    #     print("tube")
+    # elif geom.get('type') == "sphere":
+    #     print("ball")
+    # elif geom.get('type') == "capsule":
+    #     print("cap")
+    # elif geom.get('type') == "ellipsoid":
+    #     print('disk')
     return size
 
 
@@ -103,4 +103,6 @@ joint_df = pd.DataFrame(joint_data)
 # TODO
 # read up on what different number of sizes means
 
-print(body_df)
+print(joint_df)
+
+# print(body_df)
