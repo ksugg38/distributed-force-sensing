@@ -6,7 +6,8 @@ import pandas as pd
 import numpy as np
 
 # Change CSV name to correct file/file path
-csv = "joint_angles.csv"
+# csv = "joint_angles.csv"
+csv = "thetas.csv"
 
 # Make Pandas dataframe
 df = pd.read_csv(csv, header=None)
@@ -15,10 +16,11 @@ df = pd.read_csv(csv, header=None)
 # goalPos2 = df.iloc[2]
 # goalPos3 = df.iloc[3]
 
-# print(df.drop([0], axis=0))
+# df = df.drop([0], axis=0)
 
-df = df.drop([0], axis=0)
-print(df)
+# Convert to Dynamixel units
+GoalAngles = pd.DataFrame(np.round(np.rad2deg(df) / 0.088 + 2048).astype(int))
+
 
 # Number of steps
 steps = 11
@@ -27,7 +29,7 @@ timeswing = 2    # Seconds
 timestance = 2   # Seconds
 totaltime = timeswing+timestance
 # numCommands = len(goalPos1)
-numCommands = 100
+numCommands = 239
 dtswing = timeswing/numCommands
 dtstance = timestance/numCommands
 dt = totaltime/numCommands
@@ -38,18 +40,9 @@ dt = totaltime/numCommands
 def setMXpositions(pos_vector, groupwrite_num_pos):
     DXL_ID = [1, 2, 3]
     pos_vector = np.array(pos_vector)
-    # LEN_GOAL_POSITION = 4
-    # PROTOCOL_VERSION = 2
-    # COMM_SUCCESS = 0
 
     for i in range(0, len(pos_vector)):
-        # for i in range(0, 3):
         # Add Dynamixel goal position value to the Syncwrite storage
-        # dxl_addparam_result = dynamixel.GroupSyncWrite.addParam(
-        #     groupwrite_num_pos, DXL_ID[i], LEN_GOAL_POSITION)
-        # dxl_addparam_result = groupwrite_num_pos.addParam(DXL_ID[i],
-        #                                                   pos_vector)
-        # print(pos_vector[i])
         param_goal_position = [dynamixel.DXL_LOBYTE(dynamixel.DXL_LOWORD(int(pos_vector[i]))),
                                dynamixel.DXL_HIBYTE(
                                    dynamixel.DXL_LOWORD(int(pos_vector[i]))),
@@ -61,35 +54,29 @@ def setMXpositions(pos_vector, groupwrite_num_pos):
 
         if dxl_addparam_result is not True:
             print(f'ID {DXL_ID[i]} groupSyncWrite addParam failed')
-            # print('ID groupSyncWrite addparam failed', DXL_ID[i])
 
     # Syncwrite goal position
     dxl_comm_result = groupwrite_num_pos.txPacket()
     if dxl_comm_result != COMM_SUCCESS:
         print("%s" % groupwrite_num_pos.getTxRxResult(dxl_comm_result))
 
-    # groupwrite_num_pos.txPacket()
-
     # # WIP error checking
     # dxl_comm_result = correct_protocol.write4ByteTxRx(port_num, DXL2_ID,
-    # ADDR_PRO_GOAL_POSITION, dxl2_goal_position[index])
+    #                                                   ADDR_PRO_GOAL_POSITION, dxl2_goal_position[index])
     # if dxl_comm_result is not COMM_SUCCESS:
     #     # getTxRxResult is also not a function I can find
     #     print('%s\n', correct_protocol.getTxRxResult(
-    #                                         dxl_comm_result))
+    #         dxl_comm_result))
+
     # Clear syncwrite parameter storage
-    # dynamixel.GroupSyncWrite.clearParam(groupwrite_num_pos)
     groupwrite_num_pos.clearParam()
 
 
 def setMXvelocities(vel_vector, groupwrite_num_vel):
     DXL_ID = [1, 2, 3]
     LEN_PROFILE_VELOCITY = 4
-    # PROTOCOL_VERSION = 2
-    # COMM_SUCCESS = 0
 
-    # for i in range(0, len(vel_vector)):
-    for i in range(0, 3):
+    for i in range(0, len(vel_vector)):
         # Add Dynamixel goal position value to the Syncwrite storage
         dxl_addparam_result = dynamixel.GroupSyncWrite.addParam(
             groupwrite_num_vel, DXL_ID[i],
@@ -99,17 +86,14 @@ def setMXvelocities(vel_vector, groupwrite_num_vel):
 
     groupwrite_num_vel.txPacket()
 
-    # IDK if this function exisits
-    # Maybe just check if the txRxPacket exisits instead?
+    # WIP error checking
     # dxl_comm_result = dynamixel.getLastTxRxResult(port_num, PROTOCOL_VERSION)
     # if dxl_comm_result is not COMM_SUCCESS:
     #     print('%s\n', dynamixel.getTxRxResult(
     #         PROTOCOL_VERSION, dxl_comm_result))
 
     # Clear syncwrite parameter storage
-    # dynamixel.GroupSyncWrite.clearParam(groupwrite_num_vel)
     groupwrite_num_vel.clearParam()
-    print("params cleared")
 
 
 # Uses DYNAMIXEL SDK library
@@ -211,7 +195,9 @@ else:
 for i in range(0, len(DXL_ID)):
     # Enable Dynamixel Torque
     dxl_comm_result, dxl_error = correct_protocol.write1ByteTxRx(port_num,
-                            DXL_ID[i], ADDR_TORQUE_ENABLE, TORQUE_ENABLE)
+                                                                 DXL_ID[i],
+                                                                 ADDR_TORQUE_ENABLE,
+                                                                 TORQUE_ENABLE)
 
     if dxl_comm_result != COMM_SUCCESS:
         print(
@@ -221,16 +207,6 @@ for i in range(0, len(DXL_ID)):
             f"Dynamixel {DXL_ID[i]}: {correct_protocol.getRxPacketError(dxl_error)}")
     else:
         print(f"Dynamixel {DXL_ID[i]} has been successfully connected")
-
-    # No error checking I guess :(
-    # dxl_comm_result = getLastTxRxResult(port_num, PROTOCOL_VERSION)
-    # dxl_error = getLastRxPacketError(port_num, PROTOCOL_VERSION)
-    # if dxl_comm_result is not COMM_SUCCESS:
-    #     print('%s\n', getTxRxResult(PROTOCOL_VERSION, dxl_comm_result))
-    # elif dxl_error is not 0:
-    #     print('%s\n', getRxPacketError(PROTOCOL_VERSION, dxl_error))
-    # else:
-    #     print('Dynamixel has been successfully connected \n')
 
     #  Add parameter storage for Dynamixel#1 present position value
     dxl_addparam_result = groupread_num.addParam(DXL_ID[i])
@@ -250,8 +226,7 @@ for i in range(0, len(DXL_ID)):
 while 1:
     # lift the leg to the first pos
     writeTime = time.time()  # tic
-    # should this be for each x, y, z pos?
-    setMXpositions(df[0], groupwrite_num_pos)
+    setMXpositions(GoalAngles[0], groupwrite_num_pos)
     writeTime = time.time() - writeTime  # toc(writeTime)
     readTime = time.time()  # tic
     readTime = time.time() - readTime  # toc(readTime)
@@ -266,7 +241,8 @@ while 1:
         timer = time.time()  # tic
         for i in range(1, numCommands-1):
             steptime = time.time()  # tic
-            setMXpositions(df[i], groupwrite_num_pos)
+            setMXpositions(GoalAngles[i], groupwrite_num_pos)
+
             groupread_num.txRxPacket()
 
             for count in range(0, len(DXL_ID)):
