@@ -1,6 +1,8 @@
+import time
 import sys
 import dynamixel_sdk as dynamixel
 import pandas as pd
+import math
 import numpy as np
 from strain_collection import read_strain
 
@@ -38,6 +40,98 @@ dtswing = timeswing/numCommands
 dtstance = timestance/numCommands
 dt = totaltime/numCommands
 
+# # TODO: make sure calulcations are corrct
+Aswing = 1/(2*math.pi*dtswing)
+Astance = 1/(2*math.pi*dtstance)
+
+speed1 = np.zeros(numCommands)
+speed2 = np.zeros(numCommands)
+speed3 = np.zeros(numCommands)
+
+# Set speed
+# TODO: Why is it broken up into 3 for loops?
+for i in range(1, 59):
+    speed1[i] = round(Aswing * (abs(goalPos1[i] - goalPos1[i-1])))
+    speed2[i] = round(Aswing * (abs(goalPos2[i] - goalPos2[i-1])))
+    speed3[i] = round(Aswing * (abs(goalPos3[i] - goalPos3[i-1])))
+
+# should this be 0 and 1?
+speed1[1] = speed1[2]
+speed2[1] = speed2[2]
+speed3[1] = speed3[2]
+
+for i in range(60, 179):
+    speed1[i] = round(Astance * (abs(goalPos1[i] - goalPos1[i-1])))
+    speed2[i] = round(Astance * (abs(goalPos2[i] - goalPos2[i-1])))
+    speed3[i] = round(Astance * (abs(goalPos3[i] - goalPos3[i-1])))
+
+
+for i in range(180, 240):
+    speed1[i] = round(Aswing * (abs(goalPos1[i] - goalPos1[i-1])))
+    speed2[i] = round(Aswing * (abs(goalPos2[i] - goalPos2[i-1])))
+    speed3[i] = round(Aswing * (abs(goalPos3[i] - goalPos3[i-1])))
+
+
+GoalPos = pd.DataFrame([goalPos1, goalPos2, goalPos3])
+HalfPos = pd.DataFrame([np.zeros(len(goalPos1)), np.zeros(
+    len(goalPos1)), np.zeros(len(goalPos1))])
+# Is halPos supposed to be like goalpos?
+
+
+# count = 1
+# # idk what this is doing
+# for i in range(len(df.columns)):
+#     if i % 3:
+#         HalfPos.append(df.iloc[i].values)
+#         count += 1
+
+
+GoalPos = HalfPos
+speed1 = np.zeros(len(goalPos1))
+speed2 = np.zeros(len(goalPos1))
+speed3 = np.zeros(len(goalPos1))
+
+dt = totaltime/numCommands
+Astance = 1/(2*math.pi*dt/60)
+
+
+# GoalAngles = GoalPos * 0.088   # deg
+# GoalAngles = GoalPos.applymap(lambda x: x * 0.88)
+# GoalAngles = [[elem * 0.88 for elem in row] for row in GoalPos]
+# GoalRev = GoalAngles / 360    # rev
+# GoalRev = [[elem / 360 for elem in row] for row in GoalPos]
+
+
+# idk what this part is
+speed1[1] = speed1[2]
+speed2[1] = speed2[2]
+speed3[1] = speed3[2]
+
+# for i in range(2, numCommands):
+#     speed1[i] = (GoalRev[0][i]-GoalRev[0][i-1])/(dt/60)     # rev/min
+#     speed2[i] = (GoalRev[1][i]-GoalRev[1][i-1])/(dt/60)
+#     speed3[i] = (GoalRev[2][i]-GoalRev[2][i-1])/(dt/60)
+
+# Speed1 = pd.DataFrame([speed1, speed2, speed3])
+# Speed2 = abs(round(Speed1/0.299))
+
+# Speed2 = pd.DataFrame([[abs(round(elem / 0.299)) for elem in row] for row in Speed1])
+# print(Speed2)
+
+# print("works 123")
+
+
+# # row
+# for j in range(1, len(Speed2[0])):
+#     # col
+#     for i in range(1, len(Speed2)):
+#         if Speed2[i][j] == 0:
+#             Speed2[i][j] = 1
+
+# Speed2[1, :] = 0   # may need to take abs of speed
+
+# print(Speed2)
+
 
 # setMXpositions
 def setMXpositions(pos_vector, groupwrite_num_pos):
@@ -67,8 +161,9 @@ def setMXpositions(pos_vector, groupwrite_num_pos):
     # Clear syncwrite parameter storage
     groupwrite_num_pos.clearParam()
 
-
 # setMXveolcities
+
+
 def setMXvelocities(vel_vector, groupwrite_num_vel):
     vel_vector = np.array(vel_vector)
 
@@ -99,6 +194,8 @@ def setMXvelocities(vel_vector, groupwrite_num_vel):
 # Uses DYNAMIXEL SDK library
 def getch():
     return sys.stdin.read(1)
+    # char = sys.stdin.read(1)
+    # return ord(char)  # Return ASCII value of the character
 
 
 # Control table address
@@ -129,24 +226,38 @@ TORQUE_ENABLE = 1            # Value for enabling the torque
 TORQUE_DISABLE = 0            # Value for disabling the torque
 DXL_MOVING_STATUS_THRESHOLD = 20           # Dynamixel moving status threshold
 
-ESC_ASCII_VALUE = 0x1b      # Key for escaping loop
+# ESC_CHARACTER                   = 'e';          # Key for escaping loop
+ESC_ASCII_VALUE = 0x1b
+# ESC_ASCII_VALUE = 27
 
 COMM_SUCCESS = 0            # Communication Success result value
 COMM_TX_FAIL = -1001        # Communication Tx Failed
 
 # Initialize PortHandler Structs
+# Set the port path
+# Get methods and members of PortHandlerLinux or PortHandlerWindows
 port_num = dynamixel.PortHandler(DEVICENAME)
 
 # Initialize PacketHandler Structs
 correct_protocol = dynamixel.PacketHandler(PROTOCOL_VERSION)
 
+# Initalizing with zeros and not NaN
+servo1 = np.zeros((steps, numCommands))
+servo2 = np.zeros((steps, numCommands))
+servo3 = np.zeros((steps, numCommands))
+
+positions = np.zeros((numCommands, 3))
 
 dxl_comm_result = COMM_TX_FAIL                 # Communication result
 dxl_addparam_result = False                    # AddParam result
 dxl_getdata_result = False                     # GetParam result
 
 dxl_error = 0                                  # Dynamixel error
+# positions = np.zeros(len(DXL_ID))          # Present Positions
 
+stepTime = np.zeros((steps, numCommands))
+oneStepTime = np.zeros(steps)
+strains = np.zeros((6, numCommands))
 
 # Initialize Groupsync Structs
 groupwrite_num_pos = dynamixel.GroupSyncWrite(port=port_num,
@@ -182,15 +293,27 @@ else:
     quit()
 
 
-# Strain collection settings with openCM
 comportOpenCM = "/dev/tty.usbmodem14101"  # set to whatever openCM port is
-baudOpenCM = float(1000000)               # set baudrate
+baudOpenCM = float(1000000)
+# openCM = serialport(comportOpenCM,baudOpenCM)
+# openCM.flush()
+# IDstrain = [1, 2, 3, 4, 5, 6]
+# # what should strains look like?  10 x 118 double?
+# strains = pd.DataFrame(0, index=np.arange(
+#     steps-1), columns=np.arange(len(goalPos1)))
 
-# Change depending on number of input pins
-desired_len = 10
-
-# Create empty dataframe
-strains = pd.DataFrame(columns=range(desired_len))
+# strain1 = pd.DataFrame(0, index=np.arange(
+#     steps-1), columns=np.arange(len(goalPos1)))
+# strain2 = pd.DataFrame(0, index=np.arange(
+#     steps-1), columns=np.arange(len(goalPos1)))
+# strain3 = pd.DataFrame(0, index=np.arange(
+#     steps-1), columns=np.arange(len(goalPos1)))
+# strain4 = pd.DataFrame(0, index=np.arange(
+#     steps-1), columns=np.arange(len(goalPos1)))
+# strain5 = pd.DataFrame(0, index=np.arange(
+#     steps-1), columns=np.arange(len(goalPos1)))
+# strain6 = pd.DataFrame(0, index=np.arange(
+#     steps-1), columns=np.arange(len(goalPos1)))
 
 
 for i in range(0, len(DXL_ID)):
@@ -217,29 +340,34 @@ for i in range(0, len(DXL_ID)):
         print('groupSyncRead addparam worked!')
 
 
+# Change depending on number of input pins
+desired_len = 10
+
+# Create empty dataframe
+strains = pd.DataFrame(columns=range(desired_len))
+
+
 # Step the leg!
 while 1:
     # lift the leg to the first pos
     setMXpositions(GoalAngles[0], groupwrite_num_pos)
+    # writeTime = time.time() - writeTime  # toc(writeTime)
+    # readTime = time.time()  # tic
+    # readTime = time.time() - readTime  # toc(readTime)
 
     print("Press any key to continue! (or press ESC and then return to quit!)")
     if getch() == chr(ESC_ASCII_VALUE):
         break
 
-    # Set velocities
     setMXvelocities([0, 0, 0], groupwrite_num_vel)
-
-    # Loop through steps
     for j in range(1, steps):
-        # Loop through number of footpath coordinates
+        # oneStep = time.time()  # tic
+        # timer = time.time()  # tic
         for i in range(1, numCommands-1):
-            # Set position of leg
+            # steptime = time.time()  # tic
             setMXpositions(GoalAngles[i], groupwrite_num_pos)
-
-            # Read groupsync
             groupread_num.txRxPacket()
 
-            # Read strain for each step except 1st step
             if j == 1:
                 pass
             else:
@@ -257,7 +385,6 @@ while 1:
                 # Adds output as a row to dataframe
                 strains.loc[len(strains)] = output
 
-            # Make sure groupsync works
             for count in range(0, len(DXL_ID)):
                 # Check if groupsyncread data of Dynamixel is available
                 dxl_getdata_result = groupread_num.isAvailable(
@@ -266,12 +393,38 @@ while 1:
                 if dxl_getdata_result is not True:
                     print('groupSyncRead getdata failed ID', DXL_ID[count])
 
+                # # Get Dynamixel present position value
+                # positions[i, count] = groupread_num.getData(
+                #     DXL_ID[count], ADDR_PRESENT_POSITION,
+                #     LEN_PRESENT_POSITION)
 
-# Exit while loop
+            # servo1[j, i] = positions[i, 0]
+            # servo2[j, i] = positions[i, 1]
+            # servo3[j, i] = positions[i, 2]
+
+            # # toc(steptime)
+            # while (time.time() - steptime) < dt:
+            #     pass
+
+            # # toc(timer)
+            # stepTime[j, i] = time.time() - timer
+
+        # toc(oneStep)
+        # oneStepTime[j] = time.time() - oneStep
+        # print(strain1[j, :])
+        # print(strains[0, :])
+        # strain1[j, :] = strains[0, :]
+        # strain2[j, :] = strains[1, :]
+        # strain3[j, :] = strains[2, :]
+        # strain4[j, :] = strains[3, :]
+        # strain5[j, :] = strains[4, :]
+        # strain6[j, :] = strains[5, :]
+
+
 print("we're out")
-
-# WIP save strains
 print(strains)
-
 # Close port
 port_num.closePort()
+
+
+# Code works

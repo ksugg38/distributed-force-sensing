@@ -8,7 +8,8 @@ def read_strain(port_path: str, baudrate: int):
     ser = serial.Serial(port_path, baudrate)
 
     # Empty buffer and sends byte to start recieving data
-    ser.reset_input_buffer()
+    # ser.reset_input_buffer()
+    ser.flushInput()
     ser.write(bytes([1]))
 
     # Wait for byte to arrive
@@ -40,6 +41,7 @@ def read_strain(port_path: str, baudrate: int):
             except IndexError:
                 pass
 
+    ser.close()
     # Returns strain list
     return strain
 
@@ -56,7 +58,7 @@ def main():
     i = 0
     while i < data_points:
         # Store strain output as an array
-        output = read_strain("/dev/cu.usbmodem14201", 9600)
+        output = read_strain("/dev/tty.usbmodem14101", 1000000)
 
         # Deal with cases where output != desired_len
         if len(output) > desired_len:
