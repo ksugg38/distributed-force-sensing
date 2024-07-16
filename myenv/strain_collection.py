@@ -1,9 +1,12 @@
+# Katie Sugg
+# Summer 2024 WVU REU Robotics
+
 import serial
 import pandas as pd
 import numpy as np
 
 
-def read_strain(port_path: str, baudrate: int):
+def read_strain(port_path: str, baudrate: int) -> list:
     # Opens serial port
     ser = serial.Serial(port_path, baudrate)
 

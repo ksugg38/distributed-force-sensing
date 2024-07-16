@@ -1,3 +1,6 @@
+# Katie Sugg
+# Summer 2024 WVU REU Robotics
+
 import sys
 import dynamixel_sdk as dynamixel
 import pandas as pd
@@ -23,7 +26,7 @@ steps = 11
 numCommands = len(GoalAngles.columns)
 
 
-def setMXpositions(pos_vector, groupwrite_num_pos):
+def setMXpositions(pos_vector, groupwrite_num_pos) -> None:
     pos_vector = np.array(pos_vector)
 
     for i in range(0, len(pos_vector)):
@@ -51,7 +54,7 @@ def setMXpositions(pos_vector, groupwrite_num_pos):
     groupwrite_num_pos.clearParam()
 
 
-def setMXvelocities(vel_vector, groupwrite_num_vel):
+def setMXvelocities(vel_vector, groupwrite_num_vel) -> None:
     vel_vector = np.array(vel_vector)
 
     for i in range(0, len(vel_vector)):
@@ -79,7 +82,7 @@ def setMXvelocities(vel_vector, groupwrite_num_vel):
 
 
 # Uses DYNAMIXEL SDK library
-def getch():
+def getch() -> str | int:
     return sys.stdin.read(1)
 
 

@@ -1,3 +1,6 @@
+# Katie Sugg
+# Summer 2024 WVU REU Robotics
+
 from forward_kinematics_lists import forward_k
 import scipy.optimize as op
 import numpy as np
@@ -5,7 +8,7 @@ import matplotlib.pyplot as plt
 
 
 def inverse_k(joint_positions: list, joint_axes: list,
-              array_of_coordinates: list):
+              array_of_coordinates: list) -> np.ndarray:
     # Make sure array_of_coordinates is np array
     array_of_coordinates = np.array(array_of_coordinates)
 
@@ -73,5 +76,4 @@ def inverse_k(joint_positions: list, joint_axes: list,
 
     # # Show the plot
     plt.show()
-
     return thetas

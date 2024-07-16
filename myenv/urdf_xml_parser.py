@@ -1,10 +1,13 @@
+# Katie Sugg
+# Summer 2024 WVU REU Robotics
+
 import xml.etree.ElementTree as ET
 import pandas as pd
 # TODO: need to make sure the file doesnt have xacro elements
 
 
 # Helper function
-def str_to_pos(string):
+def str_to_pos(string) -> list:
     # Convert position into array
     string = string.split()
     # Convert each element to an integer
@@ -12,7 +15,7 @@ def str_to_pos(string):
 
 
 # this does not support mesh
-def get_size(geom):
+def get_size(geom) -> float | list[float]:
     geometry_type = None
     if geom.find('cylinder') is not None:
         # has length and radius
@@ -30,7 +33,7 @@ def get_size(geom):
 
 
 # Specifiy file path
-file_path = 'example_robot.urdf.xacro'
+file_path = './myenv/example_robot.urdf.xacro'
 tree = ET.parse(file_path)
 # Robot tag is root tag
 root = tree.getroot()

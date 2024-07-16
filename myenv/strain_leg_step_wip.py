@@ -1,3 +1,10 @@
+# Katie Sugg
+# Summer 2024 WVU REU Robotics
+
+# TODO: Speed code WIP
+# Just a partial python translation of Isabella's speed incorporation
+# into leg stepping
+
 import time
 import sys
 import dynamixel_sdk as dynamixel
@@ -134,7 +141,7 @@ speed3[1] = speed3[2]
 
 
 # setMXpositions
-def setMXpositions(pos_vector, groupwrite_num_pos):
+def setMXpositions(pos_vector, groupwrite_num_pos) -> None:
     pos_vector = np.array(pos_vector)
 
     for i in range(0, len(pos_vector)):
@@ -164,7 +171,7 @@ def setMXpositions(pos_vector, groupwrite_num_pos):
 # setMXveolcities
 
 
-def setMXvelocities(vel_vector, groupwrite_num_vel):
+def setMXvelocities(vel_vector, groupwrite_num_vel) -> None:
     vel_vector = np.array(vel_vector)
 
     for i in range(0, len(vel_vector)):
@@ -192,10 +199,8 @@ def setMXvelocities(vel_vector, groupwrite_num_vel):
 
 
 # Uses DYNAMIXEL SDK library
-def getch():
+def getch() -> str | int:
     return sys.stdin.read(1)
-    # char = sys.stdin.read(1)
-    # return ord(char)  # Return ASCII value of the character
 
 
 # Control table address
@@ -226,9 +231,9 @@ TORQUE_ENABLE = 1            # Value for enabling the torque
 TORQUE_DISABLE = 0            # Value for disabling the torque
 DXL_MOVING_STATUS_THRESHOLD = 20           # Dynamixel moving status threshold
 
-# ESC_CHARACTER                   = 'e';          # Key for escaping loop
+# Key for escaping loop
 ESC_ASCII_VALUE = 0x1b
-# ESC_ASCII_VALUE = 27
+
 
 COMM_SUCCESS = 0            # Communication Success result value
 COMM_TX_FAIL = -1001        # Communication Tx Failed

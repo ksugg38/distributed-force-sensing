@@ -1,18 +1,19 @@
+# Katie Sugg
+# Summer 2024 WVU REU Robotics
+
 import numpy as np
 import math
-# import copy
 import pandas as pd
 import matplotlib.pyplot as plt
 
 
-def forward_k(thetas: list):
+def forward_k(thetas: list) -> np.ndarray:
     # Thetas
     th1 = thetas[0]
     th2 = thetas[1]
     th3 = thetas[2]
 
     # Joint positions
-    # q0 = [0, 0, 0]
     q1 = np.array([0, 46.13, -25.16])
     q2 = np.array([0, 90.28, -1.46])
     q3 = np.array([0, 226.04, -103.86])
@@ -30,10 +31,6 @@ def forward_k(thetas: list):
     w3 = np.array([1, 0, 0])
 
     # Joint axes as unit vectors - rotational velocities?
-    # w1_neg = [i * -1 for i in w1]
-    # w2_neg = [i * -1 for i in w2]
-    # w3_neg = [i * -1 for i in w3]
-
     w1_neg = np.array([0, -np.sin(np.deg2rad(37)), -np.cos(np.deg2rad(37))])
     w2_neg = np.array([-1, 0, 0])
     w3_neg = np.array([-1, 0, 0])
@@ -66,7 +63,7 @@ def forward_k(thetas: list):
     return pfoot
 
 
-def matrixlog(xi: list, th):
+def matrixlog(xi: list, th) -> np.matrix:
     v = xi[:3]
     w = xi[3:]
     # assume theta is in radians
@@ -84,7 +81,6 @@ def matrixlog(xi: list, th):
     x = (np.matmul((np.identity(3)-R), (np.cross(w, v)))
          + np.matmul(np.outer(w, w), v.transpose()) * th).transpose()
     T = np.vstack((np.hstack((R, x)), [0, 0, 0, 1]))
-
     return T
 
 

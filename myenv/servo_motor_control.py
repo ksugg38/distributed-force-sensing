@@ -1,3 +1,6 @@
+# Katie Sugg
+# Summer 2024 WVU REU Robotics
+
 import sys
 import dynamixel_sdk as dynamixel
 import pandas as pd
@@ -6,101 +9,43 @@ from strain_collection import read_strain
 
 
 # Change CSV name to correct file/file path
-# csv = "joint_angles.csv"
+csv1 = "joint_angles2.csv"
 csv = "thetas.csv"
 
 # Make Pandas dataframe
 df = pd.read_csv(csv, header=None)
+df1 = pd.read_csv(csv1, header=None)
 
 # TODO: joint_angles.csv has 4 rows for some reason. WIP
-goalPos1 = np.array(df.iloc[0])
-goalPos2 = np.array(df.iloc[1])
-goalPos3 = np.array(df.iloc[2])
-# goalPos1 = df.iloc[1]
-# goalPos2 = df.iloc[2]
-# goalPos3 = df.iloc[3]
 
 
-# df = df.drop([0], axis=0)
+df1 = df1.drop([0], axis=0)
 
 # Convert to Dynamixel units
 GoalAngles = pd.DataFrame(np.round(np.rad2deg(df) / 0.088 + 2048).astype(int))
+print(GoalAngles)
+# GoalAngles1 = pd.DataFrame(np.round(np.rad2deg(df1) / 0.088 + 2048).astype(int))
+# print(GoalAngles1)
 
 
 # Number of steps
 steps = 11
 
-timeswing = 2    # Seconds
-timestance = 2   # Seconds
-totaltime = timeswing+timestance
+# Number of coordinates
 numCommands = len(GoalAngles.columns)
-dtswing = timeswing/numCommands
-dtstance = timestance/numCommands
-dt = totaltime/numCommands
 
+# Strain collection settings with openCM
+comportOpenCM = "/dev/tty.usbmodem14101"  # set to whatever openCM port is
+baudOpenCM = float(1000000)               # set baudrate
 
-# setMXpositions
-def setMXpositions(pos_vector, groupwrite_num_pos):
-    pos_vector = np.array(pos_vector)
+# Change depending on number of input pins
+desired_len = 10
 
-    for i in range(0, len(pos_vector)):
-        # Add Dynamixel goal position value to the Syncwrite storage
-        param_goal_position = [dynamixel.DXL_LOBYTE(
-            dynamixel.DXL_LOWORD(int(pos_vector[i]))),
-            dynamixel.DXL_HIBYTE(
-            dynamixel.DXL_LOWORD(int(pos_vector[i]))),
-            dynamixel.DXL_LOBYTE(
-            dynamixel.DXL_HIWORD(int(pos_vector[i]))),
-            dynamixel.DXL_HIBYTE(
-            dynamixel.DXL_HIWORD(int(pos_vector[i])))]
-        dxl_addparam_result = groupwrite_num_pos.addParam(
-            DXL_ID[i], param_goal_position)
-
-        if dxl_addparam_result is not True:
-            print(f'ID {DXL_ID[i]} groupSyncWrite addParam failed')
-
-    # Syncwrite goal position
-    dxl_comm_result = groupwrite_num_pos.txPacket()
-    if dxl_comm_result != COMM_SUCCESS:
-        print("%s" % groupwrite_num_pos.getTxRxResult(dxl_comm_result))
-
-    # Clear syncwrite parameter storage
-    groupwrite_num_pos.clearParam()
-
-
-# setMXveolcities
-def setMXvelocities(vel_vector, groupwrite_num_vel):
-    vel_vector = np.array(vel_vector)
-
-    for i in range(0, len(vel_vector)):
-        # Add Dynamixel goal position value to the Syncwrite storage
-        param_goal_velocity = [dynamixel.DXL_LOBYTE(
-            dynamixel.DXL_LOWORD(int(vel_vector[i]))),
-            dynamixel.DXL_HIBYTE(
-            dynamixel.DXL_LOWORD(int(vel_vector[i]))),
-            dynamixel.DXL_LOBYTE(
-            dynamixel.DXL_HIWORD(int(vel_vector[i]))),
-            dynamixel.DXL_HIBYTE(
-            dynamixel.DXL_HIWORD(int(vel_vector[i])))]
-        dxl_addparam_result = groupwrite_num_vel.addParam(
-            DXL_ID[i], param_goal_velocity)
-
-        if dxl_addparam_result is not True:
-            print('ID groupSyncWrite addparam failed', DXL_ID[i])
-
-    dxl_comm_result = groupwrite_num_vel.txPacket()
-    if dxl_comm_result != COMM_SUCCESS:
-        print("%s" % groupwrite_num_vel.getTxRxResult(dxl_comm_result))
-
-    # Clear syncwrite parameter storage
-    groupwrite_num_vel.clearParam()
+# Create empty dataframe
+strains = pd.DataFrame(columns=range(desired_len))
 
 
 # Uses DYNAMIXEL SDK library
-def getch():
-    return sys.stdin.read(1)
-
-
 # Control table address
 ADDR_TORQUE_ENABLE = 64
 ADDR_GOAL_POSITION = 116
@@ -133,6 +78,69 @@ ESC_ASCII_VALUE = 0x1b      # Key for escaping loop
 
 COMM_SUCCESS = 0            # Communication Success result value
 COMM_TX_FAIL = -1001        # Communication Tx Failed
+
+
+# setMXpositions
+def setMXpositions(pos_vector, groupwrite_num_pos) -> None:
+    pos_vector = np.array(pos_vector)
+
+    for i in range(0, len(pos_vector)):
+        # Add Dynamixel goal position value to the Syncwrite storage
+        param_goal_position = [dynamixel.DXL_LOBYTE(
+            dynamixel.DXL_LOWORD(int(pos_vector[i]))),
+            dynamixel.DXL_HIBYTE(
+            dynamixel.DXL_LOWORD(int(pos_vector[i]))),
+            dynamixel.DXL_LOBYTE(
+            dynamixel.DXL_HIWORD(int(pos_vector[i]))),
+            dynamixel.DXL_HIBYTE(
+            dynamixel.DXL_HIWORD(int(pos_vector[i])))]
+        dxl_addparam_result = groupwrite_num_pos.addParam(
+            DXL_ID[i], param_goal_position)
+
+        if dxl_addparam_result is not True:
+            print(f'ID {DXL_ID[i]} groupSyncWrite addParam failed')
+
+    # Syncwrite goal position
+    dxl_comm_result = groupwrite_num_pos.txPacket()
+    if dxl_comm_result != COMM_SUCCESS:
+        print("%s" % groupwrite_num_pos.getTxRxResult(dxl_comm_result))
+
+    # Clear syncwrite parameter storage
+    groupwrite_num_pos.clearParam()
+
+
+# setMXveolcities
+def setMXvelocities(vel_vector, groupwrite_num_vel) -> None:
+    vel_vector = np.array(vel_vector)
+
+    for i in range(0, len(vel_vector)):
+        # Add Dynamixel goal position value to the Syncwrite storage
+        param_goal_velocity = [dynamixel.DXL_LOBYTE(
+            dynamixel.DXL_LOWORD(int(vel_vector[i]))),
+            dynamixel.DXL_HIBYTE(
+            dynamixel.DXL_LOWORD(int(vel_vector[i]))),
+            dynamixel.DXL_LOBYTE(
+            dynamixel.DXL_HIWORD(int(vel_vector[i]))),
+            dynamixel.DXL_HIBYTE(
+            dynamixel.DXL_HIWORD(int(vel_vector[i])))]
+        dxl_addparam_result = groupwrite_num_vel.addParam(
+            DXL_ID[i], param_goal_velocity)
+
+        if dxl_addparam_result is not True:
+            print('ID groupSyncWrite addparam failed', DXL_ID[i])
+
+    dxl_comm_result = groupwrite_num_vel.txPacket()
+    if dxl_comm_result != COMM_SUCCESS:
+        print("%s" % groupwrite_num_vel.getTxRxResult(dxl_comm_result))
+
+    # Clear syncwrite parameter storage
+    groupwrite_num_vel.clearParam()
+
+
+# Get input
+def getch() -> str | int:
+    return sys.stdin.read(1)
+
 
 # Initialize PortHandler Structs
 port_num = dynamixel.PortHandler(DEVICENAME)
@@ -180,17 +188,6 @@ else:
     print("Press any key to terminate...")
     getch()
     quit()
-
-
-# Strain collection settings with openCM
-comportOpenCM = "/dev/tty.usbmodem14101"  # set to whatever openCM port is
-baudOpenCM = float(1000000)               # set baudrate
-
-# Change depending on number of input pins
-desired_len = 10
-
-# Create empty dataframe
-strains = pd.DataFrame(columns=range(desired_len))
 
 
 for i in range(0, len(DXL_ID)):

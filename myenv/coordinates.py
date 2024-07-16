@@ -1,22 +1,28 @@
+# Katie Sugg
+# Summer 2024 WVU REU Robotics
+
 import tkinter as tk
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from matplotlib.bezier import BezierSegment
 import numpy as np
+import pandas as pd
 
 
 class PointPlotter:
-    def __init__(self, master):
+    def __init__(self, master) -> None:
         self.master = master
         master.title("Footpath Generator")
 
         # Initialize graph
         self.figure, self.axes = plt.subplots(figsize=(5, 5))
         self.style_2d()
-        self.axes.set_xlim(0, 100)
+        self.axes.set_xlim(0, 50)
         self.axes.set_ylim(0, 20)
         self.points = []
+        self.footpath = []
 
+        # Draws graph
         self.canvas = FigureCanvasTkAgg(self.figure, master=master)
         self.canvas.draw()
         # Gets tk widget representing the Matplotlib canvas and "packs"
@@ -24,27 +30,32 @@ class PointPlotter:
         # in the GUI app
         self.canvas.get_tk_widget().pack()
 
+        # Connects graph to onclick
         self.click_cid = self.canvas.mpl_connect(
             'button_press_event', self.onclick)
 
+        # Create clear points button
         self.clear_button = tk.Button(master, text="Clear Points",
                                       command=self.clear_points)
         # "Packs" button into tk window
         self.clear_button.pack()
 
+        # Create footpath button
         self.footpath_button = tk.Button(
             master, text="Create Footpath", command=self.create_footpath)
 
         # "Packs" button into tk window
         self.footpath_button.pack()
 
+        # Create save coordinates button
         self.save_coordinates_button = tk.Button(master,
                                                  text="Save Coordinates",
                                                  command=self.save_coordinates)
         # "Packs" button into tk window
         self.save_coordinates_button.pack()
 
-    def onclick(self, event):
+    # Function to click points on graph
+    def onclick(self, event) -> None:
         x = round(event.xdata, 5)
         z = round(event.ydata, 5)
         y = 0
@@ -52,7 +63,8 @@ class PointPlotter:
         if x is not None and z is not None:
             self.show_entry_popup(x, y, z)
 
-    def show_entry_popup(self, x, y, z):
+    # Confirm and plots points
+    def show_entry_popup(self, x, y, z) -> None:
         # Creates confirmation window
         popup = tk.Toplevel(self.master)
         popup.title("Enter Point")
@@ -76,7 +88,7 @@ class PointPlotter:
         entry_z.pack()
         entry_z.insert(tk.END, str(z))
 
-        def confirm():
+        def confirm() -> None:
             try:
                 x = float(entry_x.get())
                 y = float(entry_y.get())
@@ -94,7 +106,8 @@ class PointPlotter:
         error_label = tk.Label(popup, text="", fg="red")
         error_label.pack()
 
-    def clear_points(self):
+    # Clear points on the screen
+    def clear_points(self) -> None:
         # Empty points
         self.points = []
         self.figure.clear()
@@ -105,18 +118,19 @@ class PointPlotter:
         self.canvas.draw()
         self.enable_onclick()
 
-    def create_footpath(self):
+    # Plots Bézier curve
+    def create_footpath(self) -> None:
         # Clear existing plot and reset style
         self.figure.clear()
         self.axes = self.figure.add_subplot(111, projection='3d')
         self.style_3d()
 
-        # Create bezier curve
-        curve_points = self.create_bezier_curve()
+        # Create footpath
+        self.create_bezier_curve()
 
         # Plot 3D curve
-        if curve_points is not None:
-            x, y, z = zip(*curve_points)
+        if self.footpath is not None:
+            x, y, z = zip(*self.footpath)
             self.axes.plot(x, y, z, 'b-', label='Bezier Curve')
             self.axes.legend()
             self.canvas.draw()
@@ -124,63 +138,89 @@ class PointPlotter:
         # Disable onclick
         self.disable_onclick()
 
-    def save_coordinates(self):
-        # Create bezier curve
-        curve_points = self.create_bezier_curve()
+    # Save coordinates to csv
+    def save_coordinates(self) -> None:
+        # make sure you have the most up to date footpath
+        self.create_bezier_curve()
 
-        # Save ouput to csv file
-        np.savetxt("coordinates2.csv", curve_points,
-                   delimiter=",")
+        # Save footpath to dataframe
+        df = pd.DataFrame(self.footpath).transpose()
 
-    # Helper style functions
-    def style_2d(self):
+        # Save csv
+        df.to_csv("test_coords3.csv", index=False, header=None)
+
+    # 2D style function
+    def style_2d(self) -> None:
         self.axes.grid(True)
         self.axes.set_xlabel('X')
         self.axes.set_ylabel('Z')
-        self.axes.set_xlim(0, 100)
+        self.axes.set_xlim(0, 50)
         self.axes.set_ylim(0, 20)
 
-    def style_3d(self):
+    # 3D style function
+    def style_3d(self) -> None:
         self.axes.grid(True)
         self.axes.set_xlabel('X')
         self.axes.set_ylabel('Y')
         self.axes.set_zlabel('Z')
-        self.axes.set_xlim(0, 100)
-        self.axes.set_ylim(0, 20)
+        self.axes.set_xlim(0, 50)
+        self.axes.set_ylim(0, 10)
         self.axes.set_zlim(0, 20)
 
     # Creates bezier curve
-    def create_bezier_curve(self) -> list:
+    # def create_bezier_curve(self) -> list:
+    def create_bezier_curve(self):
+        # Get list of points
         input_array = np.array(self.points)
+
+        # Error checking
         if len(input_array) < 2:
             print("Need at least two points to draw a Bezier curve.")
             return
+
         # Create BezierSegment object
         bezier_segment = BezierSegment(input_array)
 
         # Create evenly distributed points
-        t_values = np.linspace(0, 1, 100)
+        t_values = np.linspace(0, 1, 150)
 
-        # Create points along bezier segment
-        curve_points = bezier_segment(t_values)
-        curve_points = np.round(curve_points, 8)
-        return curve_points
+        # Create points along bezier segment and rounds
+        curve_points = np.round(bezier_segment(t_values), 8)
+
+        # Connects the ends of the curve in flipped order
+        bottom_line = np.linspace(
+            curve_points[len(curve_points)-1], curve_points[0], 90)
+
+        # Get middle of curve
+        mid_index = len(curve_points) // 2
+
+        # Split curve into two pieces
+        first_half = curve_points[:mid_index]
+        second_half = curve_points[mid_index:]
+
+        # Connect pieces to create footpath
+        result = np.concatenate(
+            (second_half, bottom_line, first_half), axis=0)
+        self.footpath = result
+        # return result
 
     # Disables during 3D graph
-    def disable_onclick(self):
+    def disable_onclick(self) -> None:
         self.canvas.mpl_disconnect(self.click_cid)
 
-    def enable_onclick(self):
+    # Enables clicking ability
+    def enable_onclick(self) -> None:
         self.click_cid = self.canvas.mpl_connect(
             'button_press_event', self.onclick)
 
 
 def main():
     root = tk.Tk()
-    # Wrapping it
+    # Wrapping root in class
     PointPlotter(root)
     root.mainloop()
 
 
+# Will automatically run main
 if __name__ == "__main__":
     main()

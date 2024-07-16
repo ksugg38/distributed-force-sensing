@@ -1,10 +1,14 @@
+# Katie Sugg
+# Summer 2024 WVU REU Robotics
+
 import pandas as pd
 from inverse_kinematics import inverse_k
 import math
 
 
 # Change CSV name to correct file/file path
-csv = "coordinates2.csv"
+csv = "revised_with_ratios2.csv"
+# csv = "./myenv/coordinates.csv"
 
 # Make Pandas dataframe
 df = pd.read_csv(csv, header=None)
@@ -17,6 +21,7 @@ if (column_len == 0 | column_len == 1):
 elif (column_len > 3):
     # Case 2: Columns are x,y,z - transpose df
     df = df.transpose()
+# print(df)
 
 # Case 1: Columns are coordinates
 # Convert points to list and add to array_of_coordinates
@@ -28,8 +33,6 @@ for i in range(num_of_columns):
 
 
 # DEFINE EVERYTHING
-swing_seconds = 2
-stance_seconds = 2
 
 # Joint positions
 # Last position should be end-effector
@@ -39,18 +42,17 @@ q3 = [0, 226.04, -103.86]
 q4 = [0, 125.53, - 237.13]
 joint_positions = [q1, q2, q3, q4]
 
-# Joint axes as unit vectors - rotational velocities?
+# Joint axes as unit vectors
 w1 = [0, -math.sin(37), -math.cos(37)]
 w2 = [1, 0, 0]
 w3 = [1, 0, 0]
 joint_axes = [w1, w2, w3]
 
-# Calculate joint angles , joint_axes, array_of_coordinates
-# joint_positions
+# Calculate joint angles
 joint_angles = inverse_k(joint_positions, joint_axes, array_of_coordinates)
 
 # Convert to pandas dataframe
 df = pd.DataFrame(joint_angles)
 
 # Save it to csv
-df.to_csv("joint_angles.csv", index=False)
+df.to_csv("joint_angles2.csv", index=False)

@@ -1,3 +1,6 @@
+# Katie Sugg
+# Summer 2024 WVU REU Robotics
+
 import xml.etree.ElementTree as ET
 import pandas as pd
 

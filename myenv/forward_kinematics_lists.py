@@ -1,9 +1,13 @@
+# Katie Sugg
+# Summer 2024 WVU REU Robotics
+
 import numpy as np
 import math
 import copy
 
 
-def forward_k(thetas: list, joint_positions: list, joint_axes: list):
+def forward_k(thetas: list, joint_positions: list,
+              joint_axes: list) -> np.ndarray:
     # Homogenous coordinates. 1 is scaling factor
     homogenous_coordinates = []
     for i in range(len(joint_positions)):
@@ -11,6 +15,7 @@ def forward_k(thetas: list, joint_positions: list, joint_axes: list):
         p.append(1)
         homogenous_coordinates.append(p)
 
+    # Create negative joint axes
     neg_joint_axes = []
     for j in range(len(joint_axes)):
         neg = copy.deepcopy(joint_axes[j])
@@ -46,11 +51,14 @@ def forward_k(thetas: list, joint_positions: list, joint_axes: list):
 
     # Perform the final matrix multiplication
     end_effector = np.matmul(result, end_effector.transpose())
+
+    # Get and returns footpath coordinate
     pfoot = np.array(end_effector)[0][:3]
     return pfoot
 
 
-def matrixlog(xi: list, th: float):
+# Transformation maxtrix helpter function
+def matrixlog(xi: list, th: float) -> np.matrix:
     v = xi[:3]
     w = xi[3:]
     # assume theta is in radians
