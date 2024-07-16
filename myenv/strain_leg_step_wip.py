@@ -307,18 +307,27 @@ baudOpenCM = float(1000000)
 # strains = pd.DataFrame(0, index=np.arange(
 #     steps-1), columns=np.arange(len(goalPos1)))
 
-# strain1 = pd.DataFrame(0, index=np.arange(
-#     steps-1), columns=np.arange(len(goalPos1)))
-# strain2 = pd.DataFrame(0, index=np.arange(
-#     steps-1), columns=np.arange(len(goalPos1)))
-# strain3 = pd.DataFrame(0, index=np.arange(
-#     steps-1), columns=np.arange(len(goalPos1)))
-# strain4 = pd.DataFrame(0, index=np.arange(
-#     steps-1), columns=np.arange(len(goalPos1)))
-# strain5 = pd.DataFrame(0, index=np.arange(
-#     steps-1), columns=np.arange(len(goalPos1)))
-# strain6 = pd.DataFrame(0, index=np.arange(
-#     steps-1), columns=np.arange(len(goalPos1)))
+# Create empty dataframe
+strain1 = pd.DataFrame(index=range(2, steps),
+                       columns=range(0, numCommands-1))
+strain2 = pd.DataFrame(index=range(2, steps),
+                       columns=range(0, numCommands-1))
+strain3 = pd.DataFrame(index=range(2, steps),
+                       columns=range(0, numCommands-1))
+strain4 = pd.DataFrame(index=range(2, steps),
+                       columns=range(0, numCommands-1))
+strain5 = pd.DataFrame(index=range(2, steps),
+                       columns=range(0, numCommands-1))
+strain6 = pd.DataFrame(index=range(2, steps),
+                       columns=range(0, numCommands-1))
+strain7 = pd.DataFrame(index=range(2, steps),
+                       columns=range(0, numCommands-1))
+strain8 = pd.DataFrame(index=range(2, steps),
+                       columns=range(0, numCommands-1))
+strain9 = pd.DataFrame(index=range(2, steps),
+                       columns=range(0, numCommands-1))
+strain10 = pd.DataFrame(index=range(2, steps),
+                        columns=range(0, numCommands-1))
 
 
 for i in range(0, len(DXL_ID)):

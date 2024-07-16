@@ -4,11 +4,13 @@
 import pandas as pd
 from inverse_kinematics import inverse_k
 import math
+import matplotlib.pyplot as plt
 
 
 # Change CSV name to correct file/file path
-csv = "revised_with_ratios2.csv"
+# csv = "revised_with_ratios2.csv"
 # csv = "./myenv/coordinates.csv"
+csv = "test_coords3.csv"
 
 # Make Pandas dataframe
 df = pd.read_csv(csv, header=None)
@@ -31,7 +33,6 @@ i = 0
 for i in range(num_of_columns):
     array_of_coordinates.append(df[i].tolist())
 
-
 # DEFINE EVERYTHING
 
 # Joint positions
@@ -48,11 +49,23 @@ w2 = [1, 0, 0]
 w3 = [1, 0, 0]
 joint_axes = [w1, w2, w3]
 
+df2 = pd.DataFrame(array_of_coordinates)
+print(df2)
+
 # Calculate joint angles
 joint_angles = inverse_k(joint_positions, joint_axes, array_of_coordinates)
 
 # Convert to pandas dataframe
 df = pd.DataFrame(joint_angles)
 
+x1 = df.loc[0]
+y1 = df.loc[1]
+z1 = df.loc[2]
+fig = plt.figure()
+ax = fig.add_subplot(111, projection='3d')
+
+ax.scatter(x1, y1, z1, c='r', marker='o', label='First Set')
+plt.show()
+
 # Save it to csv
-df.to_csv("joint_angles2.csv", index=False)
+df.to_csv("joint_angles2.csv", index=False, header=None)

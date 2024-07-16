@@ -12,20 +12,14 @@ from strain_collection import read_strain
 csv1 = "joint_angles2.csv"
 csv = "thetas.csv"
 
+
 # Make Pandas dataframe
-df = pd.read_csv(csv, header=None)
-df1 = pd.read_csv(csv1, header=None)
+df = pd.read_csv(csv1, header=None)
 
-# TODO: joint_angles.csv has 4 rows for some reason. WIP
-
-
-df1 = df1.drop([0], axis=0)
 
 # Convert to Dynamixel units
 GoalAngles = pd.DataFrame(np.round(np.rad2deg(df) / 0.088 + 2048).astype(int))
 print(GoalAngles)
-# GoalAngles1 = pd.DataFrame(np.round(np.rad2deg(df1) / 0.088 + 2048).astype(int))
-# print(GoalAngles1)
 
 
 # Number of steps
@@ -42,7 +36,26 @@ baudOpenCM = float(1000000)               # set baudrate
 desired_len = 10
 
 # Create empty dataframe
-strains = pd.DataFrame(columns=range(desired_len))
+strain1 = pd.DataFrame(index=range(2, steps),
+                       columns=range(0, numCommands-1))
+strain2 = pd.DataFrame(index=range(2, steps),
+                       columns=range(0, numCommands-1))
+strain3 = pd.DataFrame(index=range(2, steps),
+                       columns=range(0, numCommands-1))
+strain4 = pd.DataFrame(index=range(2, steps),
+                       columns=range(0, numCommands-1))
+strain5 = pd.DataFrame(index=range(2, steps),
+                       columns=range(0, numCommands-1))
+strain6 = pd.DataFrame(index=range(2, steps),
+                       columns=range(0, numCommands-1))
+strain7 = pd.DataFrame(index=range(2, steps),
+                       columns=range(0, numCommands-1))
+strain8 = pd.DataFrame(index=range(2, steps),
+                       columns=range(0, numCommands-1))
+strain9 = pd.DataFrame(index=range(2, steps),
+                       columns=range(0, numCommands-1))
+strain10 = pd.DataFrame(index=range(2, steps),
+                        columns=range(0, numCommands-1))
 
 
 # Uses DYNAMIXEL SDK library
@@ -138,7 +151,7 @@ def setMXvelocities(vel_vector, groupwrite_num_vel) -> None:
 
 
 # Get input
-def getch() -> str | int:
+def getch():
     return sys.stdin.read(1)
 
 
@@ -219,17 +232,18 @@ while 1:
     # lift the leg to the first pos
     setMXpositions(GoalAngles[0], groupwrite_num_pos)
 
-    print("Press any key to continue! (or press ESC and then return to quit!)")
+    print("Press any key to continue! (or press ESC and return to quit!)")
     if getch() == chr(ESC_ASCII_VALUE):
         break
 
     # Set velocities
-    setMXvelocities([0, 0, 0], groupwrite_num_vel)
+    # setMXvelocities([0, 0, 0], groupwrite_num_vel)
 
     # Loop through steps
-    for j in range(1, steps):
+
+    for j in range(1, steps+1):
         # Loop through number of footpath coordinates
-        for i in range(1, numCommands-1):
+        for i in range(0, numCommands):
             # Set position of leg
             setMXpositions(GoalAngles[i], groupwrite_num_pos)
 
@@ -252,7 +266,17 @@ while 1:
                     output = output + [np.nan] * (desired_len - len(output))
 
                 # Adds output as a row to dataframe
-                strains.loc[len(strains)] = output
+                # strains.loc[len(strains)] = output
+                strain1.loc[j, i] = output[0]
+                strain2.loc[j, i] = output[1]
+                strain3.loc[j, i] = output[2]
+                strain4.loc[j, i] = output[3]
+                strain5.loc[j, i] = output[4]
+                strain6.loc[j, i] = output[5]
+                strain7.loc[j, i] = output[6]
+                strain8.loc[j, i] = output[7]
+                strain9.loc[j, i] = output[8]
+                strain10.loc[j, i] = output[9]
 
             # Make sure groupsync works
             for count in range(0, len(DXL_ID)):
@@ -267,8 +291,62 @@ while 1:
 # Exit while loop
 print("we're out")
 
-# WIP save strains
-print(strains)
+# Reindex to include 10 steps of data and 240 points
+# Range function is not inclusive
 
+strain1.index = range(1, steps)
+strain1.columns = range(1, numCommands+1)
+
+strain2.index = range(1, steps)
+strain2.columns = range(1, numCommands+1)
+
+strain3.index = range(1, steps)
+strain3.columns = range(1, numCommands+1)
+
+strain4.index = range(1, steps)
+strain4.columns = range(1, numCommands+1)
+
+strain5.index = range(1, steps)
+strain5.columns = range(1, numCommands+1)
+
+strain6.index = range(1, steps)
+strain6.columns = range(1, numCommands+1)
+
+strain7.index = range(1, steps)
+strain7.columns = range(1, numCommands+1)
+
+strain8.index = range(1, steps)
+strain8.columns = range(1, numCommands+1)
+
+strain9.index = range(1, steps)
+strain9.columns = range(1, numCommands+1)
+
+strain10.index = range(1, steps)
+strain10.columns = range(1, numCommands+1)
+
+# Export to Excel with multiple sheets
+# Dealer's choice if they want index/columns or not
+# with pd.ExcelWriter('strain_sheets.xlsx') as writer:
+#     # strain1.to_excel(writer, sheet_name='Strain1', index=False, header=None)
+#     # strain2.to_excel(writer, sheet_name='Strain2', index=False, header=None)
+#     # strain3.to_excel(writer, sheet_name='Strain3', index=False, header=None)
+#     # strain4.to_excel(writer, sheet_name='Strain4', index=False, header=None)
+#     # strain5.to_excel(writer, sheet_name='Strain5', index=False, header=None)
+#     # strain6.to_excel(writer, sheet_name='Strain6', index=False, header=None)
+#     # strain7.to_excel(writer, sheet_name='Strain7', index=False, header=None)
+#     # strain8.to_excel(writer, sheet_name='Strain8', index=False, header=None)
+#     # strain9.to_excel(writer, sheet_name='Strain9', index=False, header=None)
+#     # strain10.to_excel(writer, sheet_name='Strain10', index=False, header=None)
+
+#     strain1.to_excel(writer, sheet_name='Strain1')
+#     strain2.to_excel(writer, sheet_name='Strain2')
+#     strain3.to_excel(writer, sheet_name='Strain3')
+#     strain4.to_excel(writer, sheet_name='Strain4')
+#     strain5.to_excel(writer, sheet_name='Strain5')
+#     strain6.to_excel(writer, sheet_name='Strain6')
+#     strain7.to_excel(writer, sheet_name='Strain7')
+#     strain8.to_excel(writer, sheet_name='Strain8')
+#     strain9.to_excel(writer, sheet_name='Strain9')
+#     strain10.to_excel(writer, sheet_name='Strain10')
 # Close port
 port_num.closePort()

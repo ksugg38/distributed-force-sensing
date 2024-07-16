@@ -7,6 +7,10 @@ from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from matplotlib.bezier import BezierSegment
 import numpy as np
 import pandas as pd
+from point_checker import PointChecker
+
+# Legged robot to stick bug ratio
+ratio = 14.7887
 
 
 class PointPlotter:
@@ -17,7 +21,7 @@ class PointPlotter:
         # Initialize graph
         self.figure, self.axes = plt.subplots(figsize=(5, 5))
         self.style_2d()
-        self.axes.set_xlim(0, 50)
+        self.axes.set_xlim(0, 20)
         self.axes.set_ylim(0, 20)
         self.points = []
         self.footpath = []
@@ -108,8 +112,9 @@ class PointPlotter:
 
     # Clear points on the screen
     def clear_points(self) -> None:
-        # Empty points
+        # Empty points and footpath
         self.points = []
+        self.footpath = []
         self.figure.clear()
 
         # Redraw 2D graph
@@ -147,6 +152,7 @@ class PointPlotter:
         df = pd.DataFrame(self.footpath).transpose()
 
         # Save csv
+        df.to_csv("coordinates.csv", index=False, header=None)
         df.to_csv("test_coords3.csv", index=False, header=None)
 
     # 2D style function
@@ -154,7 +160,7 @@ class PointPlotter:
         self.axes.grid(True)
         self.axes.set_xlabel('X')
         self.axes.set_ylabel('Z')
-        self.axes.set_xlim(0, 50)
+        self.axes.set_xlim(0, 20)
         self.axes.set_ylim(0, 20)
 
     # 3D style function
@@ -163,12 +169,8 @@ class PointPlotter:
         self.axes.set_xlabel('X')
         self.axes.set_ylabel('Y')
         self.axes.set_zlabel('Z')
-        self.axes.set_xlim(0, 50)
-        self.axes.set_ylim(0, 10)
-        self.axes.set_zlim(0, 20)
 
     # Creates bezier curve
-    # def create_bezier_curve(self) -> list:
     def create_bezier_curve(self):
         # Get list of points
         input_array = np.array(self.points)
@@ -201,8 +203,37 @@ class PointPlotter:
         # Connect pieces to create footpath
         result = np.concatenate(
             (second_half, bottom_line, first_half), axis=0)
-        self.footpath = result
-        # return result
+
+        # Transpose to work with x, y, z individally
+        result_transpose = result.T
+
+        # Get original max z value
+        original_max_z_value = max(result_transpose[2])
+
+        # Multiply results by ratio
+        result_transpose = result_transpose * ratio
+
+        # Shift over and down
+        max_x_value = max(result_transpose[0])
+        third = max_x_value / 3   # get 1/3 of max T1 value
+        twothirds = third * 2
+
+        # Shift path to zero height (number from height of first graph)
+        footshift = ratio * original_max_z_value
+
+        # Adjust footpath
+        result_transpose[0] = result_transpose[0]-twothirds+15
+        result_transpose[1] = result_transpose[1]+footshift+75
+        result_transpose[2] = result_transpose[2]-footshift
+
+        checker = PointChecker()
+        result_transpose = result_transpose.T
+        for i in range(len(result_transpose)):
+            if not checker.is_inside_hull(result_transpose[i]):
+                print("point not in range")
+                break
+
+        self.footpath = result_transpose
 
     # Disables during 3D graph
     def disable_onclick(self) -> None:

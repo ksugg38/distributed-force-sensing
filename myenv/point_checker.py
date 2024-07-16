@@ -1,5 +1,5 @@
 # Katie Sugg
-# Summer 2024 WVU REU Robotics
+# Summer 2024 WVU REU Robotic
 
 import numpy as np
 import math

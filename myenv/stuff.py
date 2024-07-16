@@ -9,32 +9,32 @@ ratio = 14.7887
 df = pd.read_csv("./myenv/coordinates.csv", header=None)
 
 df2 = pd.read_csv("test_coords3.csv", header=None, index_col=False)
-print(df2)
+# print(df2)
 # df2 = df2.transpose()
-z22 = df2.loc[2]
-print(max(z22))
-df2 = df2 * ratio
+# z22 = df2.loc[2]
+# print(df[0])
+# df2 = df2 * ratio
 
 # My coords
 x2 = df2.loc[0]
 y2 = df2.loc[1]
 z2 = df2.loc[2]
-print(z2)
-print(max(z2))
+# print(z2)
+# print(max(z2))
 
-# Shift over and down
-third = max(x2) / 3      # get 1/3 of max T1 value
-twothirds = third * 2
+# # Shift over and down
+# third = max(x2) / 3      # get 1/3 of max T1 value
+# twothirds = third * 2
 
-# Shift path to zero height (number from height of first graph)
-footshift = ratio * 11.45
+# # Shift path to zero height (number from height of first graph)
+# footshift = ratio * 11.45
 
-# Adjust footpath? IDK how
-x2 = x2-twothirds+15
-y2 = y2+footshift+75
-z2 = z2-footshift
+# # Adjust footpath? IDK how
+# x2 = x2-twothirds+15
+# y2 = y2+footshift+75
+# z2 = z2-footshift
 
-df3 = pd.DataFrame({'x': x2, 'y': y2, 'z': z2})
+# df3 = pd.DataFrame({'x': x2, 'y': y2, 'z': z2})
 
 # print("Modified DataFrame:")
 # print(df3)

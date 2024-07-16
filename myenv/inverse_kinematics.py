@@ -5,6 +5,7 @@ from forward_kinematics_lists import forward_k
 import scipy.optimize as op
 import numpy as np
 import matplotlib.pyplot as plt
+import math
 
 
 def inverse_k(joint_positions: list, joint_axes: list,
@@ -46,7 +47,8 @@ def inverse_k(joint_positions: list, joint_axes: list,
         thetas[:, j] = result.x
 
         # Calculate forward_k to check footpath off of calculated theta
-        recreated_path[:, j] = forward_k(thetas[:, j],
+        vector = [2*math.pi, 2*math.pi, 2*math.pi]
+        recreated_path[:, j] = forward_k(thetas[:, j]-vector,
                                          joint_positions, joint_axes)
 
         # Update theta guess
@@ -73,7 +75,20 @@ def inverse_k(joint_positions: list, joint_axes: list,
     ax.set_ylabel('Y Label')
     ax.set_zlabel('Z Label')
     ax.set_title('3D Scatter Plot')
+    plt.axis('equal')
 
     # # Show the plot
+    # plt.show()
+
+    # Plot the results
+    plt.figure()
+    plt.plot(thetas[0, :], label='Theta 1')
+    plt.plot(thetas[1, :], label='Theta 2')
+    plt.plot(thetas[2, :], label='Theta 3')
+    plt.legend()
+    plt.xlabel('Steps')
+    plt.ylabel('Angle (degrees)')
+    plt.title('Newton-Raphson Root Finding Method')
     plt.show()
+
     return thetas
