@@ -148,12 +148,20 @@ class PointPlotter:
         # make sure you have the most up to date footpath
         self.create_bezier_curve()
 
+        # Reverse order so leg can step in right direction
+        # reverse_order = self.footpath[::-1]
+
         # Save footpath to dataframe
+        # df = pd.DataFrame(reverse_order).transpose()
+        # df1 = pd.DataFrame(self.footpath).transpose()
+
         df = pd.DataFrame(self.footpath).transpose()
 
         # Save csv
-        df.to_csv("coordinates.csv", index=False, header=None)
-        df.to_csv("test_coords3.csv", index=False, header=None)
+        # df.to_csv("coordinates_reverse.csv", index=False, header=None)
+        # df1.to_csv("coordinates_regular.csv", index=False, header=None)
+        df.to_csv("coordinates_stuff.csv", index=False, header=None)
+        print("Coordinates saved")
 
     # 2D style function
     def style_2d(self) -> None:

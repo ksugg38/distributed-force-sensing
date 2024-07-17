@@ -6,9 +6,30 @@ import matplotlib.pyplot as plt
 
 ratio = 14.7887
 
+fig = plt.figure()
+ax = fig.add_subplot(111, projection='3d')
+
 df = pd.read_csv("./myenv/coordinates.csv", header=None)
 
 df2 = pd.read_csv("test_coords3.csv", header=None, index_col=False)
+
+regular = pd.read_csv("coordinates_stuff.csv", header=None, index_col=False)
+reverse = pd.read_csv("coordinates_reverse.csv", header=None, index_col=False)
+
+regular_x = regular.loc[0]
+regular_y = regular.loc[1]
+regular_z = regular.loc[2]
+
+ax.scatter(regular_x, regular_y, regular_z, c='r', marker='o', label='First')
+
+
+reverse_x = reverse.loc[0]
+reverse_y = reverse.loc[1]
+reverse_z = reverse.loc[2]
+
+ax.scatter(reverse_x, reverse_y, reverse_z, c='b', marker='^', label='Second')
+
+
 # print(df2)
 # df2 = df2.transpose()
 # z22 = df2.loc[2]
@@ -40,27 +61,26 @@ z2 = df2.loc[2]
 # print(df3)
 # df3.to_csv("revised_with_ratios2.csv", index=False)
 
-df4 = pd.read_csv("revised_with_ratios.csv", header=None)
-df4 = df4.transpose()
+# df4 = pd.read_csv("revised_with_ratios.csv", header=None)
+# df4 = df4.transpose()
 # print(df4)
 # # Create a 3D plot
-fig = plt.figure()
-ax = fig.add_subplot(111, projection='3d')
+
 
 # Extract the coordinate points
 x1 = df.loc[0]
 y1 = df.loc[1]
 z1 = df.loc[2]
 
-# My coords with ratios
-x3 = df4.loc[0]
-y3 = df4.loc[1]
-z3 = df4.loc[2]
+# # My coords with ratios
+# x3 = df4.loc[0]
+# y3 = df4.loc[1]
+# z3 = df4.loc[2]
 
 # print(x3)
 
 # Plot the first set of points
-ax.scatter(x1, y1, z1, c='r', marker='o', label='First Set')
+# ax.scatter(x1, y1, z1, c='r', marker='o', label='First Set')
 
 # ax.scatter(x3, y3, z3, c='g', label='Third Set')
 
@@ -72,7 +92,7 @@ z = [0]
 ax.scatter(x, y, z, c='g', marker='o')
 
 # Plot the second set of points
-ax.scatter(x2, y2, z2, c='b', marker='^', label='Second Set')
+# ax.scatter(x2, y2, z2, c='b', marker='^', label='Second Set')
 
 # # Set labels and title
 ax.set_xlabel('X Label')
