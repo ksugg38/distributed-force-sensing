@@ -9,17 +9,17 @@ from strain_collection import read_strain
 
 
 # Change CSV name to correct file/file path
-csv1 = "joint_angles2.csv"
-csv = "thetas.csv"
+csv = "joint_angles.csv"
+# csv = "thetas.csv"
 
 
 # Make Pandas dataframe
-df = pd.read_csv(csv1, header=None)
+df = pd.read_csv(csv, header=None)
 
 
 # Convert to Dynamixel units
 GoalAngles = pd.DataFrame(np.round(np.rad2deg(df) / 0.088 + 2048).astype(int))
-print(GoalAngles)
+# print(GoalAngles)
 
 
 # Number of steps
@@ -29,7 +29,8 @@ steps = 11
 numCommands = len(GoalAngles.columns)
 
 # Strain collection settings with openCM
-comportOpenCM = "/dev/tty.usbmodem14101"  # set to whatever openCM port is
+comportOpenCM = "/dev/tty.usbmodem14101"  # set to whatever openCM port i
+# comportOpenCM = "COM5"
 baudOpenCM = float(1000000)               # set baudrate
 
 # Change depending on number of input pins
@@ -80,7 +81,7 @@ DXL2_ID = 2            # Dynamixel#2 ID: 2
 DXL3_ID = 3            # Dynamixel#2 ID: 3
 DXL_ID = [DXL1_ID, DXL2_ID, DXL3_ID]
 BAUDRATE = 1000000
-# DEVICENAME = 'COM7'       # Check which port is being used on your controller
+# DEVICENAME = 'COM4'       # Check which port is being used on your controller
 DEVICENAME = "/dev/tty.usbserial-FT78LNE8"
 
 TORQUE_ENABLE = 1            # Value for enabling the torque
@@ -240,8 +241,9 @@ while 1:
     # setMXvelocities([0, 0, 0], groupwrite_num_vel)
 
     # Loop through steps
-
+    print("steps:")
     for j in range(1, steps+1):
+        print(j)
         # Loop through number of footpath coordinates
         for i in range(0, numCommands):
             # Set position of leg
@@ -326,27 +328,30 @@ strain10.columns = range(1, numCommands+1)
 
 # Export to Excel with multiple sheets
 # Dealer's choice if they want index/columns or not
-# with pd.ExcelWriter('strain_sheets.xlsx') as writer:
-#     # strain1.to_excel(writer, sheet_name='Strain1', index=False, header=None)
-#     # strain2.to_excel(writer, sheet_name='Strain2', index=False, header=None)
-#     # strain3.to_excel(writer, sheet_name='Strain3', index=False, header=None)
-#     # strain4.to_excel(writer, sheet_name='Strain4', index=False, header=None)
-#     # strain5.to_excel(writer, sheet_name='Strain5', index=False, header=None)
-#     # strain6.to_excel(writer, sheet_name='Strain6', index=False, header=None)
-#     # strain7.to_excel(writer, sheet_name='Strain7', index=False, header=None)
-#     # strain8.to_excel(writer, sheet_name='Strain8', index=False, header=None)
-#     # strain9.to_excel(writer, sheet_name='Strain9', index=False, header=None)
-#     # strain10.to_excel(writer, sheet_name='Strain10', index=False, header=None)
+with pd.ExcelWriter('strain_sheets.xlsx') as writer:
+    # strain1.to_excel(writer, sheet_name='Strain1', index=False, header=None)
+    # strain2.to_excel(writer, sheet_name='Strain2', index=False, header=None)
+    # strain3.to_excel(writer, sheet_name='Strain3', index=False, header=None)
+    # strain4.to_excel(writer, sheet_name='Strain4', index=False, header=None)
+    # strain5.to_excel(writer, sheet_name='Strain5', index=False, header=None)
+    # strain6.to_excel(writer, sheet_name='Strain6', index=False, header=None)
+    # strain7.to_excel(writer, sheet_name='Strain7', index=False, header=None)
+    # strain8.to_excel(writer, sheet_name='Strain8', index=False, header=None)
+    # strain9.to_excel(writer, sheet_name='Strain9', index=False, header=None)
+    # strain10.to_excel(writer, sheet_name='Strain10', index=False, header=None)
 
-#     strain1.to_excel(writer, sheet_name='Strain1')
-#     strain2.to_excel(writer, sheet_name='Strain2')
-#     strain3.to_excel(writer, sheet_name='Strain3')
-#     strain4.to_excel(writer, sheet_name='Strain4')
-#     strain5.to_excel(writer, sheet_name='Strain5')
-#     strain6.to_excel(writer, sheet_name='Strain6')
-#     strain7.to_excel(writer, sheet_name='Strain7')
-#     strain8.to_excel(writer, sheet_name='Strain8')
-#     strain9.to_excel(writer, sheet_name='Strain9')
-#     strain10.to_excel(writer, sheet_name='Strain10')
+    strain1.to_excel(writer, sheet_name='Strain1')
+    strain2.to_excel(writer, sheet_name='Strain2')
+    strain3.to_excel(writer, sheet_name='Strain3')
+    strain4.to_excel(writer, sheet_name='Strain4')
+    strain5.to_excel(writer, sheet_name='Strain5')
+    strain6.to_excel(writer, sheet_name='Strain6')
+    strain7.to_excel(writer, sheet_name='Strain7')
+    strain8.to_excel(writer, sheet_name='Strain8')
+    strain9.to_excel(writer, sheet_name='Strain9')
+    strain10.to_excel(writer, sheet_name='Strain10')
+
+print("strain is saved")
+
 # Close port
 port_num.closePort()
