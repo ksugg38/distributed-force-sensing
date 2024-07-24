@@ -3,6 +3,9 @@
 
 import xml.etree.ElementTree as ET
 import pandas as pd
+
+# This is a WIP file that extracts data from a general URDF xml file
+# Collecting joint data needs work.
 # TODO: need to make sure the file doesnt have xacro elements
 
 
@@ -62,8 +65,6 @@ joint_axis = []
 # TODO
 end_eff = []
 
-# why does camera link have two visual elements????????
-
 
 for element in all_descendants:
     # Adds links to list
@@ -92,8 +93,6 @@ link_data = {'Element': link_elements,
              'size': link_size}
 
 link_df = pd.DataFrame(link_data)
-
-# print(link_df)
 
 joint_data = {'Element': joint_elements,
               'name': joint_name,

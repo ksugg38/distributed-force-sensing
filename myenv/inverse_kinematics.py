@@ -7,6 +7,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 import math
 
+# This method is used in kinematics_bridge.py
+
 
 def inverse_k(joint_positions: list, joint_axes: list,
               array_of_coordinates: list) -> np.ndarray:
@@ -25,7 +27,6 @@ def inverse_k(joint_positions: list, joint_axes: list,
     def constraint(th, coords, joint_positions, joint_axes):
         return coords - forward_k(th, joint_positions, joint_axes)
 
-    # Newton-Raphson Root Finding Method
     for j in range(num_coords):
 
         # Function to minimize
@@ -56,7 +57,6 @@ def inverse_k(joint_positions: list, joint_axes: list,
 
     # Read the CSV file into a DataFrame
     data = recreated_path
-    # print(data)
 
     # Extract x, y, and z coordinates
     x = data[0]
@@ -67,28 +67,27 @@ def inverse_k(joint_positions: list, joint_axes: list,
     fig = plt.figure()
     ax = fig.add_subplot(111, projection='3d')
 
-    # # Plot the points
-    ax.scatter(x, y, z)
+    # Plot the points
+    ax.scatter(x, y, z, 'b-')
 
     # # Set labels and title
-    ax.set_xlabel('X Label')
-    ax.set_ylabel('Y Label')
-    ax.set_zlabel('Z Label')
-    ax.set_title('3D Scatter Plot')
-    plt.axis('equal')
+    ax.set_xlabel('X')
+    ax.set_ylabel('Y')
+    ax.set_zlabel('Z')
+    ax.set_title('Recreated footpath using inverse kinematic thetas')
 
-    # # Show the plot
-    # plt.show()
+    # If y-axis is extremely streached out, uncomment the line below
+    # plt.axis('equal')
 
     # Plot the results
     plt.figure()
-    plt.plot(thetas[0, :], label='Theta 1')
-    plt.plot(thetas[1, :], label='Theta 2')
-    plt.plot(thetas[2, :], label='Theta 3')
+    plt.plot(thetas[0, :], label='Servo 1')
+    plt.plot(thetas[1, :], label='Servo 2')
+    plt.plot(thetas[2, :], label='Servo 3')
     plt.legend()
-    plt.xlabel('Steps')
-    plt.ylabel('Angle (degrees)')
-    plt.title('Newton-Raphson Root Finding Method')
+    plt.xlabel('Coordinates')
+    plt.ylabel('Angle')
+    plt.title('Joint Angles change over Footpath Points')
     plt.show()
 
     return thetas

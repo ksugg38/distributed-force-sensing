@@ -4,6 +4,9 @@
 import xml.etree.ElementTree as ET
 import pandas as pd
 
+# This is a WIP file that extracts data from a MuJoCo xml file
+# The geometry sizes need work
+
 
 # Helper function
 def str_to_pos(string):
@@ -107,5 +110,3 @@ joint_df = pd.DataFrame(joint_data)
 # read up on what different number of sizes means
 
 print(joint_df)
-
-# print(body_df)

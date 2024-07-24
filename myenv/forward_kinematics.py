@@ -6,6 +6,9 @@ import math
 import pandas as pd
 import matplotlib.pyplot as plt
 
+# This version declares the joint positions/axes inside the function.
+# Run main() in this file or import into another file to use.
+
 
 def forward_k(thetas: list) -> np.ndarray:
     # Thetas
@@ -20,9 +23,9 @@ def forward_k(thetas: list) -> np.ndarray:
     q4 = np.array([0, 125.53, - 237.13])
 
     # Homogenous coordinates. 1 is scaling factor
-    # p1 = np.hstack((q1, 1))
-    # p2 = np.hstack((q2, 1))
-    # p3 = np.hstack((q3, 1))
+    p1 = np.hstack((q1, 1))
+    p2 = np.hstack((q2, 1))
+    p3 = np.hstack((q3, 1))
     p4 = np.hstack((q4, 1))
 
     # Joint axes as unit vectors - rotational velocities?
@@ -51,15 +54,20 @@ def forward_k(thetas: list) -> np.ndarray:
     T2 = matrixlog(xi2, th2)
     T3 = matrixlog(xi3, th3)
 
-    # j1 = p1
-    # j2 = np.dot(np.dot(T1, T2), (np.array(p2).transpose()))
-    # j3 = np.dot(np.dot(np.dot(T1, T2), T3), np.array(p3).transpose())
+    # Joint and end-effector coordinates
+    j1 = p1
+    j2 = np.matmul(np.matmul(T1, T2), (np.array(p2).transpose()))
+    j3 = np.matmul(np.matmul(np.matmul(T1, T2), T3), np.array(p3).transpose())
     j4 = np.matmul(np.matmul(np.matmul(T1, T2), T3), np.array(p4).transpose())
-    # j4 = np.dot(np.dot(np.dot(T1, T2), T3), np.array(p4).transpose())
 
+    # End-effector coordinate
     pfoot = np.array(j4)[0][:3]
-    # j = [np.array(j1)[:3], np.array(j2)[0][:3], np.array(j3)[0][:3], pfoot]
-    # print(j)
+
+    # Array with joint and end-effector coordinates
+    j = [np.array(j1)[:3], np.array(j2)[0][:3], np.array(j3)[0][:3], pfoot]
+    print(j)
+
+    # Return end-effector coordinate
     return pfoot
 
 
@@ -84,6 +92,7 @@ def matrixlog(xi: list, th) -> np.matrix:
     return T
 
 
+# Run file with a joint angle csv to see forward kinematics
 def main():
     df = pd.read_csv("thetas.csv", header=None)
     foot = np.zeros((3, 240))
@@ -99,7 +108,6 @@ def main():
         foot[:, j] = forward_k(th[j, :])
 
     data = foot
-    # print(data)
 
     # Extract x, y, and z coordinates
     x = data[0]

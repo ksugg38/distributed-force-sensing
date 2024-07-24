@@ -5,7 +5,7 @@
 # Just a partial python translation of Isabella's speed incorporation
 # into leg stepping
 
-import time
+# import time
 import sys
 import dynamixel_sdk as dynamixel
 import pandas as pd

@@ -5,6 +5,8 @@ import numpy as np
 import math
 import copy
 
+# This method is used in inverse_kinematics.py to check generated theta values.
+
 
 def forward_k(thetas: list, joint_positions: list,
               joint_axes: list) -> np.ndarray:

@@ -5,16 +5,33 @@ import pandas as pd
 from inverse_kinematics import inverse_k
 import math
 
+# This file takes a coordinates csv and calculates the joint angles and
+# saves them as a csv.
+# Make sure you change the joint positions and axes if needed.
+
 
 # Change CSV name to correct file/file path
-# csv = "coordinates.csv"
-# csv = "coordinates_regular.csv"
-csv = "coordinates_stuff.csv"
+csv = "coordinates.csv"
 
 # Make Pandas dataframe
 df = pd.read_csv(csv, header=None)
 
-print(df)
+
+# DEFINE EVERYTHING
+
+# Joint positions
+# Last position should be end-effector
+q1 = [0, 46.13, -25.16]
+q2 = [0, 90.28, -1.46]
+q3 = [0, 226.04, -103.86]
+q4 = [0, 125.53, - 237.13]
+joint_positions = [q1, q2, q3, q4]
+
+# Joint axes as unit vectors
+w1 = [0, -math.sin(37), -math.cos(37)]
+w2 = [1, 0, 0]
+w3 = [1, 0, 0]
+joint_axes = [w1, w2, w3]
 
 
 # Get first df column and check if length is greater than 3
@@ -34,22 +51,6 @@ num_of_columns = len(df.columns)
 i = 0
 for i in range(num_of_columns):
     array_of_coordinates.append(df[i].tolist())
-
-# DEFINE EVERYTHING
-
-# Joint positions
-# Last position should be end-effector
-q1 = [0, 46.13, -25.16]
-q2 = [0, 90.28, -1.46]
-q3 = [0, 226.04, -103.86]
-q4 = [0, 125.53, - 237.13]
-joint_positions = [q1, q2, q3, q4]
-
-# Joint axes as unit vectors
-w1 = [0, -math.sin(37), -math.cos(37)]
-w2 = [1, 0, 0]
-w3 = [1, 0, 0]
-joint_axes = [w1, w2, w3]
 
 
 # Calculate joint angles

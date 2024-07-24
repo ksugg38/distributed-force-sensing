@@ -9,6 +9,12 @@ import numpy as np
 import pandas as pd
 from point_checker import PointChecker
 
+# Class PointPlotter creates the Footpath Gerator. It allows you to
+# visualize the footpath and save the coordinates
+# Run this file directly to start the Footpath Generator
+
+# The transformations are still a WIP in create_bezier_curve
+
 # Legged robot to stick bug ratio
 ratio = 14.7887
 
@@ -136,7 +142,8 @@ class PointPlotter:
         # Plot 3D curve
         if self.footpath is not None:
             x, y, z = zip(*self.footpath)
-            self.axes.plot(x, y, z, 'b-', label='Bezier Curve')
+            self.axes.plot(
+                x, y, z, 'b-', label='Footpath generated with Bézier Curve')
             self.axes.legend()
             self.canvas.draw()
 
@@ -152,15 +159,10 @@ class PointPlotter:
         # reverse_order = self.footpath[::-1]
 
         # Save footpath to dataframe
-        # df = pd.DataFrame(reverse_order).transpose()
-        # df1 = pd.DataFrame(self.footpath).transpose()
-
         df = pd.DataFrame(self.footpath).transpose()
 
         # Save csv
-        # df.to_csv("coordinates_reverse.csv", index=False, header=None)
-        # df1.to_csv("coordinates_regular.csv", index=False, header=None)
-        df.to_csv("coordinates_stuff.csv", index=False, header=None)
+        df.to_csv("coordinates.csv", index=False, header=None)
         print("Coordinates saved")
 
     # 2D style function

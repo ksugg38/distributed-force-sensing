@@ -9,7 +9,7 @@ ratio = 14.7887
 fig = plt.figure()
 ax = fig.add_subplot(111, projection='3d')
 
-df = pd.read_csv("./myenv/coordinates.csv", header=None)
+df = pd.read_csv("coordinates.csv", header=None)
 
 df2 = pd.read_csv("test_coords3.csv", header=None, index_col=False)
 
@@ -20,14 +20,14 @@ regular_x = regular.loc[0]
 regular_y = regular.loc[1]
 regular_z = regular.loc[2]
 
-ax.scatter(regular_x, regular_y, regular_z, c='r', marker='o', label='First')
+# ax.scatter(regular_x, regular_y, regular_z, c='r', marker='o', label='First')
 
 
 reverse_x = reverse.loc[0]
 reverse_y = reverse.loc[1]
 reverse_z = reverse.loc[2]
 
-ax.scatter(reverse_x, reverse_y, reverse_z, c='b', marker='^', label='Second')
+# ax.scatter(reverse_x, reverse_y, reverse_z, c='b', marker='^', label='Second')
 
 
 # print(df2)
@@ -72,6 +72,10 @@ x1 = df.loc[0]
 y1 = df.loc[1]
 z1 = df.loc[2]
 
+x1 = x1 * 400
+y1 = y1 * 400
+z1 = z1 * 400
+
 # # My coords with ratios
 # x3 = df4.loc[0]
 # y3 = df4.loc[1]
@@ -80,7 +84,7 @@ z1 = df.loc[2]
 # print(x3)
 
 # Plot the first set of points
-# ax.scatter(x1, y1, z1, c='r', marker='o', label='First Set')
+ax.scatter(x1, y1, z1, c='r', marker='o', label='First Set')
 
 # ax.scatter(x3, y3, z3, c='g', label='Third Set')
 

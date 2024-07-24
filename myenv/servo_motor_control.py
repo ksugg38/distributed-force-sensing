@@ -7,10 +7,11 @@ import pandas as pd
 import numpy as np
 from strain_collection import read_strain
 
+# This file steps the leg and collects strain and saves it as an excel file.
+
 
 # Change CSV name to correct file/file path
 csv = "joint_angles.csv"
-# csv = "thetas.csv"
 
 
 # Make Pandas dataframe
@@ -29,7 +30,7 @@ steps = 11
 numCommands = len(GoalAngles.columns)
 
 # Strain collection settings with openCM
-comportOpenCM = "/dev/tty.usbmodem14101"  # set to whatever openCM port i
+comportOpenCM = "/dev/tty.usbmodem141301"  # set to whatever openCM port i
 # comportOpenCM = "COM5"
 baudOpenCM = float(1000000)               # set baudrate
 
@@ -61,6 +62,7 @@ strain10 = pd.DataFrame(index=range(2, steps),
 
 # Uses DYNAMIXEL SDK library
 # Control table address
+# You may need to change these values depending on the type of servo.
 ADDR_TORQUE_ENABLE = 64
 ADDR_GOAL_POSITION = 116
 ADDR_PRESENT_POSITION = 132
@@ -81,7 +83,8 @@ DXL2_ID = 2            # Dynamixel#2 ID: 2
 DXL3_ID = 3            # Dynamixel#2 ID: 3
 DXL_ID = [DXL1_ID, DXL2_ID, DXL3_ID]
 BAUDRATE = 1000000
-# DEVICENAME = 'COM4'       # Check which port is being used on your controller
+
+# Check which port is being used on your controller
 DEVICENAME = "/dev/tty.usbserial-FT78LNE8"
 
 TORQUE_ENABLE = 1            # Value for enabling the torque
@@ -233,7 +236,7 @@ while 1:
     # lift the leg to the first pos
     setMXpositions(GoalAngles[0], groupwrite_num_pos)
 
-    print("Press any key to continue! (or press ESC and return to quit!)")
+    print("Press Enter to continue! (or press esc and then Enter to quit!)")
     if getch() == chr(ESC_ASCII_VALUE):
         break
 
@@ -241,9 +244,7 @@ while 1:
     # setMXvelocities([0, 0, 0], groupwrite_num_vel)
 
     # Loop through steps
-    print("steps:")
     for j in range(1, steps+1):
-        print(j)
         # Loop through number of footpath coordinates
         for i in range(0, numCommands):
             # Set position of leg
@@ -327,7 +328,7 @@ strain10.index = range(1, steps)
 strain10.columns = range(1, numCommands+1)
 
 # Export to Excel with multiple sheets
-# Dealer's choice if they want index/columns or not
+# If you want index/columns, uncomment lines 333-342 and comment out 344-353
 with pd.ExcelWriter('strain_sheets.xlsx') as writer:
     # strain1.to_excel(writer, sheet_name='Strain1', index=False, header=None)
     # strain2.to_excel(writer, sheet_name='Strain2', index=False, header=None)
@@ -338,7 +339,7 @@ with pd.ExcelWriter('strain_sheets.xlsx') as writer:
     # strain7.to_excel(writer, sheet_name='Strain7', index=False, header=None)
     # strain8.to_excel(writer, sheet_name='Strain8', index=False, header=None)
     # strain9.to_excel(writer, sheet_name='Strain9', index=False, header=None)
-    # strain10.to_excel(writer, sheet_name='Strain10', index=False, header=None)
+    # strain10.to_excel(writer, sheet_name='Strain10', index=False,header=None)
 
     strain1.to_excel(writer, sheet_name='Strain1')
     strain2.to_excel(writer, sheet_name='Strain2')

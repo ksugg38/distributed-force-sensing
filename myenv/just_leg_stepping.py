@@ -6,9 +6,10 @@ import dynamixel_sdk as dynamixel
 import pandas as pd
 import numpy as np
 
+# This file just steps the robot leg. It doesn't record data.
+
 # Change CSV name to correct file/file path
-# csv = "joint_angles.csv"
-csv = "thetas.csv"
+csv = "joint_angles.csv"
 
 # Make Pandas dataframe
 df = pd.read_csv(csv, header=None)

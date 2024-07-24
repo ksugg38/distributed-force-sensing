@@ -5,13 +5,15 @@ import serial
 import pandas as pd
 import numpy as np
 
+# This method is used in servo_motor_control.py
+# Run main() in this file to work with method directly.
+
 
 def read_strain(port_path: str, baudrate: int) -> list:
     # Opens serial port
     ser = serial.Serial(port_path, baudrate)
 
     # Empty buffer and sends byte to start recieving data
-    # ser.reset_input_buffer()
     ser.flushInput()
     ser.write(bytes([1]))
 
